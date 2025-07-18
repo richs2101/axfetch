@@ -1,11 +1,10 @@
 #!/bin/bash
 
-COLOR="\033[38;5;213m"  # Your magenta-pink
+COLOR="\033[38;5;213m"  # Exact magenta-pink
 RESET="\033[0m"
-
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Define your banner lines
+# Define banner lines
 banner_lines=(
 "░█████╗░██╗░░██╗░█████╗░░██████╗"
 "██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
@@ -15,7 +14,7 @@ banner_lines=(
 "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 )
 
-# Read axos.txt and replace color variables
+# Read the logo file and apply color
 mapfile -t logo_lines < <(
   while IFS= read -r line; do
     line="${line//\$1/$COLOR}"
@@ -24,19 +23,16 @@ mapfile -t logo_lines < <(
   done < "$SCRIPT_DIR/axos.txt"
 )
 
-# Get total line count
-banner_len=${#banner_lines[@]}
-logo_len=${#logo_lines[@]}
-total_lines=$(( banner_len > logo_len ? banner_len : logo_len ))
-
-# Print banner + logo side-by-side
-for ((i = 0; i < total_lines; i++)); do
-    banner="${banner_lines[i]}"
-    logo="${logo_lines[i]}"
-    printf "${COLOR}%-40s${RESET} %s\n" "$banner" "$logo"
+# Print banner next to first 6 lines of the logo
+for i in "${!logo_lines[@]}"; do
+  if [[ $i -lt ${#banner_lines[@]} ]]; then
+    printf "${COLOR}%-38s${RESET}  %s\n" "${banner_lines[$i]}" "${logo_lines[$i]}"
+  else
+    echo -e "${logo_lines[$i]}"
+  fi
 done
 
-# System info
+# System Info
 echo
 echo -e "${COLOR}OS:${RESET} AxOS (Arch-based)"
 echo -e "${COLOR}Kernel:${RESET} $(uname -r)"

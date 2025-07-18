@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Exact magenta-pink from your screenshot
+# Your exact magenta-pink color (from screenshot)
 COLOR1="\033[38;5;213m"
 COLOR2="\033[38;5;213m"
 RESET="\033[0m"
@@ -8,14 +8,14 @@ RESET="\033[0m"
 # Path to axos.txt
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Read and print each line, replacing $1 and $2 with the exact color
+# Print ASCII logo with color replacements
 while IFS= read -r line; do
     line="${line//\$1/$COLOR1}"
     line="${line//\$2/$COLOR2}"
     echo -e "$line$RESET"
 done < "$SCRIPT_DIR/axos.txt"
 
-# System Info section
+# System Info
 echo
 echo -e "${COLOR1}OS:${RESET} AxOS (Arch-based)"
 echo -e "${COLOR1}Kernel:${RESET} $(uname -r)"
@@ -26,3 +26,4 @@ echo -e "${COLOR1}Terminal:${RESET} $TERM"
 echo -e "${COLOR1}CPU:${RESET} $(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
 echo -e "${COLOR1}RAM:${RESET} $(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 echo -e "${COLOR1}Packages:${RESET} $(pacman -Q | wc -l)"
+echo -e "${COLOR1}Storage:${RESET} $(df -h / | awk 'NR==2 {print $3 "/" $2}')"

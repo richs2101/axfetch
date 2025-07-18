@@ -5,32 +5,35 @@ COLOR2="\033[38;5;213m"
 RESET="\033[0m"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Banner text (logo title)
+# Top layout: Logo left, Text right
 echo -e "${COLOR1}"
-echo "░█████╗░██╗░░██╗░█████╗░░██████╗"
-echo "██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
-echo "███████║░╚███╔╝░██║░░██║╚█████╗░"
-echo "██╔══██║░██╔██╗░██║░░██║░╚═══██╗"
-echo "██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝"
-echo "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
+echo -e "     ◯                                   ░█████╗░██╗░░██╗░█████╗░░██████╗"
+echo -e "    ╱A╲                                  ██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
+echo -e "    ╲ ╱                                  ███████║░╚███╔╝░██║░░██║╚█████╗░"
+echo -e "     ◯                                   ██╔══██║░██╔██╗░██║░░██║░╚═══██╗"
+echo -e "                                         ██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝"
+echo -e "                                         ╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 echo -e "$RESET"
 
-# ASCII logo
-while IFS= read -r line; do
-    line="${line//\$1/$COLOR1}"
-    line="${line//\$2/$COLOR2}"
-    echo -e "$line$RESET"
-done < "$SCRIPT_DIR/axos.txt"
+# Box Top Border
+echo -e "${COLOR1}╭────────────────────────────────────────────────────────────────────────────╮$RESET"
 
-# System Info
-echo
-echo -e "${COLOR1}OS:${RESET} AxOS (Arch-based)"
-echo -e "${COLOR1}Kernel:${RESET} $(uname -r)"
-echo -e "${COLOR1}Uptime:${RESET} $(uptime -p)"
-echo -e "${COLOR1}Shell:${RESET} $SHELL"
-echo -e "${COLOR1}WM/DE:${RESET} ${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
-echo -e "${COLOR1}Terminal:${RESET} $TERM"
-echo -e "${COLOR1}CPU:${RESET} $(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
-echo -e "${COLOR1}RAM:${RESET} $(free -h | awk '/Mem:/ {print $3 "/" $2}')"
-echo -e "${COLOR1}Packages:${RESET} $(pacman -Q | wc -l)"
-echo -e "${COLOR1}Storage:${RESET} $(df -h / | awk 'NR==2 {print $3 "/" $2}')"
+# System Info Block: 3 columns
+printf "${COLOR1}│${RESET} %-20s %-30s %-20s ${COLOR1}│\n" \
+  "OS: AxOS (Arch-based)" \
+  "Kernel: $(uname -r)" \
+  "Uptime: $(uptime -p)"
+printf "${COLOR1}│${RESET} %-20s %-30s %-20s ${COLOR1}│\n" \
+  "Shell: $SHELL" \
+  "WM/DE: ${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}" \
+  "Terminal: $TERM"
+printf "${COLOR1}│${RESET} %-20s %-30s %-20s ${COLOR1}│\n" \
+  "CPU: $(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)" \
+  "RAM: $(free -h | awk '/Mem:/ {print $3 "/" $2}')" \
+  "Packages: $(pacman -Q | wc -l)"
+printf "${COLOR1}│${RESET} %-20s %-30s %-20s ${COLOR1}│\n" \
+  "Storage: $(df -h / | awk 'NR==2 {print $3 "/" $2}')" \
+  "" "" # Fillers for alignment
+
+# Box Bottom Border
+echo -e "${COLOR1}╰────────────────────────────────────────────────────────────────────────────╯$RESET"

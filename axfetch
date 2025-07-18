@@ -1,74 +1,61 @@
 #!/bin/bash
 
-COLOR="\033[38;5;213m"        # Magenta-pink (AxOS color)
-BOLD_COLOR="\033[1;38;5;213m" # Bold magenta-pink
+# Colors
+COLOR="\033[38;5;213m"     # Magenta-pink
+BOLD_COLOR="\033[1;38;5;213m"
 RESET="\033[0m"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# ASCII logo
-read -r -d '' LOGO <<'EOF'
-$1                     ooooos
-$1                 os   o  o    s
-$1            oo       s    s       ss
-$1        oooo     o            o     ssss
-$1       o    oo                    os    s
-$1      oo  o                          s  ss
-$1     o o o        oooooooooooo        s s s
-$1       o s       ooooooooooooo        s s
-$1    s  oo        oooooooooooooo        oo  s
-$1   o   o         ooooos  oooooo         o   s
-$1  o    o        soooo     soooo         o    s
-$1     os         oooo       soooo         so
-$1              ooosss   sssoooo              o
-$1     ss        oooo          ooos        so
-$1  s    s       oooo          oooo       o    o
-$1   s   s       ooo            ooo       o   o
-$1    s  ss     oooo            ooos     oo  s
-$1       s s  soooos            sooooo  s o
-$1     s s s                            o o o
-$1      ss  s                          o  oo
-$1       s    ss                    oo    o
-$1        #sss     s            o     oooo
-$1            ss       s    s       oo
-$1                 ss   s  o    o
-$1                     ssssss
-EOF
+# Read ASCII logo into an array
+mapfile -t logo_lines < "$SCRIPT_DIR/axos.txt"
 
-# AxOS Banner
-read -r -d '' BANNER <<'EOF'
-░█████╗░██╗░░██╗░█████╗░░██████╗
-██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝
-███████║░╚███╔╝░██║░░██║╚█████╗░
-██╔══██║░██╔██╗░██║░░██║░╚═══██╗
-██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝
-╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░
-EOF
+# AxOS banner
+banner_lines=(
+"░█████╗░██╗░░██╗░█████╗░░██████╗"
+"██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
+"███████║░╚███╔╝░██║░░██║╚█████╗░"
+"██╔══██║░██╔██╗░██║░░██║░╚═══██╗"
+"██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝"
+"╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
+)
 
-# System info
+# Print logo + banner side by side
+for i in {0..25}; do
+    printf "${COLOR}%-40s" "${logo_lines[i]}"
+    [[ $i -lt ${#banner_lines[@]} ]] && printf "%s" "${banner_lines[i]}"
+    echo -e "${RESET}"
+done
+
+echo
+
+# Gather system info
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
-UPTIME="$(uptime -p | sed 's/^up //')"
+UPTIME="$(uptime -p | sed 's/up //')"
 SHELL="$SHELL"
 WM="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
 TERM="$TERM"
 CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
 RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
-DISK="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
+STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Print logo
-echo -e "$COLOR"
-echo "$LOGO" | sed "s/\$1/$COLOR/g"
-echo -e "$RESET"
+# Build info lines
+info_lines=(
+"│ ${BOLD_COLOR}OS:${RESET} $OS   ${BOLD_COLOR}Kernel:${RESET} $KERNEL   ${BOLD_COLOR}Uptime:${RESET} $UPTIME"
+"│ ${BOLD_COLOR}Shell:${RESET} $SHELL   ${BOLD_COLOR}WM/DE:${RESET} $WM   ${BOLD_COLOR}Terminal:${RESET} $TERM"
+"│ ${BOLD_COLOR}CPU:${RESET} $CPU   ${BOLD_COLOR}RAM:${RESET} $RAM   ${BOLD_COLOR}Packages:${RESET} $PKGS"
+"│ ${BOLD_COLOR}Storage:${RESET} $STORAGE"
+)
 
-# Print banner
-echo -e "$COLOR$BANNER$RESET"
-echo
+# Determine box width
+BOX_WIDTH=70
+TOP_BORDER="╭$(printf '─%.0s' $(seq 1 $((BOX_WIDTH - 2))))╮"
+BOTTOM_BORDER="╰$(printf '─%.0s' $(seq 1 $((BOX_WIDTH - 2))))╯"
 
-# System Info (same layout as the sketch you uploaded)
-echo -e "${COLOR}──────────────────────────────────────────────────────────────╮"
-printf "│ ${BOLD_COLOR}OS:${RESET} %s  ${BOLD_COLOR}Kernel:${RESET} %s  ${BOLD_COLOR}Uptime:${RESET} %s │\n" "$OS" "$KERNEL" "$UPTIME"
-printf "│ ${BOLD_COLOR}Shell:${RESET} %s  ${BOLD_COLOR}WM/DE:${RESET} %s  ${BOLD_COLOR}Terminal:${RESET} %s │\n" "$SHELL" "$WM" "$TERM"
-printf "│ ${BOLD_COLOR}CPU:${RESET} %s  ${BOLD_COLOR}RAM:${RESET} %s  ${BOLD_COLOR}Packages:${RESET} %s │\n" "$CPU" "$RAM" "$PKGS"
-printf "│ ${BOLD_COLOR}Storage:${RESET} %s │\n" "$DISK"
-echo -e "${COLOR}╰──────────────────────────────────────────────────────────────╯${RESET}"
+# Print box
+echo -e "${COLOR}${TOP_BORDER}${RESET}"
+for line in "${info_lines[@]}"; do
+    printf "${COLOR}%-*s${RESET}\n" "$BOX_WIDTH" "$line│"
+done
+echo -e "${COLOR}${BOTTOM_BORDER}${RESET}"

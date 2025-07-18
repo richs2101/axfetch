@@ -5,18 +5,40 @@ COLOR2="\033[38;5;213m"
 RESET="\033[0m"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Top layout: Logo left, Text right
-echo -e "${COLOR1}"
-echo -e "     ◯                                   ░█████╗░██╗░░██╗░█████╗░░██████╗"
-echo -e "    ╱A╲                                  ██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
-echo -e "    ╲ ╱                                  ███████║░╚███╔╝░██║░░██║╚█████╗░"
-echo -e "     ◯                                   ██╔══██║░██╔██╗░██║░░██║░╚═══██╗"
-echo -e "                                         ██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝"
-echo -e "                                         ╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
-echo -e "$RESET"
+# Read ASCII logo and banner into arrays
+mapfile -t ascii_logo < "$SCRIPT_DIR/axos.txt"
+
+banner_lines=(
+  "░█████╗░██╗░░██╗░█████╗░░██████╗"
+  "██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
+  "███████║░╚███╔╝░██║░░██║╚█████╗░"
+  "██╔══██║░██╔██╗░██║░░██║░╚═══██╗"
+  "██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝"
+  "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
+)
+
+# Determine max lines between logo and banner
+max_lines=${#ascii_logo[@]}
+if (( ${#banner_lines[@]} > max_lines )); then
+  max_lines=${#banner_lines[@]}
+fi
+
+# Print logo left, banner right
+echo
+for ((i = 0; i < max_lines; i++)); do
+  logo_line="${ascii_logo[i]:-}"
+  banner_line="${banner_lines[i]:-}"
+  # Replace placeholders if any
+  logo_line="${logo_line//\$1/$COLOR1}"
+  logo_line="${logo_line//\$2/$COLOR2}"
+  echo -e "${logo_line:-}  ${COLOR1}${banner_line}${RESET}"
+done
+
+# Spacer
+echo
 
 # Box Top Border
-echo -e "${COLOR1}╭────────────────────────────────────────────────────────────────────────────╮$RESET"
+echo -e "${COLOR1}╭────────────────────────────────────────────────────────────────────────────╮${RESET}"
 
 # System Info Block: 3 columns
 printf "${COLOR1}│${RESET} %-20s %-30s %-20s ${COLOR1}│\n" \
@@ -33,7 +55,7 @@ printf "${COLOR1}│${RESET} %-20s %-30s %-20s ${COLOR1}│\n" \
   "Packages: $(pacman -Q | wc -l)"
 printf "${COLOR1}│${RESET} %-20s %-30s %-20s ${COLOR1}│\n" \
   "Storage: $(df -h / | awk 'NR==2 {print $3 "/" $2}')" \
-  "" "" # Fillers for alignment
+  "" "" # Fillers
 
 # Box Bottom Border
-echo -e "${COLOR1}╰────────────────────────────────────────────────────────────────────────────╯$RESET"
+echo -e "${COLOR1}╰────────────────────────────────────────────────────────────────────────────╯${RESET}"

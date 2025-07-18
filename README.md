@@ -11,7 +11,7 @@ Credits to [rudy-in](https://github.com/rudy-in) for making this ascii
 - System info: Kernel, Shell, DE/WM, Terminal, CPU, RAM, Packages, Uptime
 - Fully terminal-based and lightweight
 - Easily installable in any Arch-based system
-- Created by **Rudy-in**
+- ASCII logo Created by **Rudy-in**
 
 ---
 

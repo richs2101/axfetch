@@ -2,7 +2,7 @@
 
 COLOR="\033[38;5;213m"        # Magenta-pink (AxOS color)
 BOLD_COLOR="\033[1;38;5;213m" # Bold magenta-pink
-RESET="\033[0m"               # Reset
+RESET="\033[0m"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
 # ASCII logo
@@ -44,10 +44,10 @@ read -r -d '' BANNER <<'EOF'
 ╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░
 EOF
 
-# Gather system info
+# System info
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
-UPTIME="$(uptime -p | sed 's/up //')"
+UPTIME="$(uptime -p | sed 's/^up //')"
 SHELL="$SHELL"
 WM="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
 TERM="$TERM"
@@ -56,17 +56,19 @@ RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 DISK="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Output
+# Print logo
 echo -e "$COLOR"
 echo "$LOGO" | sed "s/\$1/$COLOR/g"
-echo
-echo "$BANNER"
+echo -e "$RESET"
+
+# Print banner
+echo -e "$COLOR$BANNER$RESET"
 echo
 
-# Info box
-echo -e "${COLOR}╭──────────────────────────────────────────────────────────────╮"
-echo -e "│ ${BOLD_COLOR}OS:${RESET} $OS  ${BOLD_COLOR}Kernel:${RESET} $KERNEL  ${BOLD_COLOR}Uptime:${RESET} $UPTIME │"
-echo -e "│ ${BOLD_COLOR}Shell:${RESET} $SHELL  ${BOLD_COLOR}WM/DE:${RESET} $WM  ${BOLD_COLOR}Terminal:${RESET} $TERM │"
-echo -e "│ ${BOLD_COLOR}CPU:${RESET} $CPU  ${BOLD_COLOR}RAM:${RESET} $RAM  ${BOLD_COLOR}Packages:${RESET} $PKGS │"
-echo -e "│ ${BOLD_COLOR}Storage:${RESET} $DISK │"
+# System Info (same layout as the sketch you uploaded)
+echo -e "${COLOR}──────────────────────────────────────────────────────────────╮"
+printf "│ ${BOLD_COLOR}OS:${RESET} %s  ${BOLD_COLOR}Kernel:${RESET} %s  ${BOLD_COLOR}Uptime:${RESET} %s │\n" "$OS" "$KERNEL" "$UPTIME"
+printf "│ ${BOLD_COLOR}Shell:${RESET} %s  ${BOLD_COLOR}WM/DE:${RESET} %s  ${BOLD_COLOR}Terminal:${RESET} %s │\n" "$SHELL" "$WM" "$TERM"
+printf "│ ${BOLD_COLOR}CPU:${RESET} %s  ${BOLD_COLOR}RAM:${RESET} %s  ${BOLD_COLOR}Packages:${RESET} %s │\n" "$CPU" "$RAM" "$PKGS"
+printf "│ ${BOLD_COLOR}Storage:${RESET} %s │\n" "$DISK"
 echo -e "${COLOR}╰──────────────────────────────────────────────────────────────╯${RESET}"

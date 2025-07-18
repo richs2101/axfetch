@@ -1,37 +1,35 @@
 #!/bin/bash
 
-COLOR1="\033[1;38;5;213m"  # Bold bright magenta-pink for labels and header
-COLOR2="\033[38;5;213m"    # Normal magenta for ASCII
+COLOR1="\033[38;5;213m"  # Bright magenta-pink
 RESET="\033[0m"
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Inline ASCII logo
+# ASCII logo lines
 ascii_logo=(
-"$2                     ooooos"
-"$2                 os   o  o    s"
-"$2            oo       s    s       ss"
-"$2        oooo     o            o     ssss"
-"$2       o    oo                    os    s"
-"$2      oo  o                          s  ss"
-"$2     o o o        oooooooooooo        s s s"
-"$2       o s       ooooooooooooo        s s"
-"$2    s  oo        oooooooooooooo        oo  s"
-"$2   o   o         ooooos  oooooo         o   s"
-"$2  o    o        soooo     soooo         o    s"
-"$2     os         oooo       soooo         so"
-"$2 s              ooosss   sssoooo              o"
-"$2     ss        oooo          ooos        so"
-"$2  s    s       oooo          oooo       o    o"
-"$2   s   s       ooo            ooo       o   o"
-"$2    s  ss     oooo            ooos     oo  s"
-"$2       s s  soooos            sooooo  s o"
-"$2     s s s                            o o o"
-"$2      ss  s                          o  oo"
-"$2       s    ss                    oo    o"
-"$2        #sss     s            o     oooo"
-"$2            ss       s    s       oo"
-"$2                 ss   s  o    o"
-"$2                     ssssss"
+"$COLOR1                     ooooos"
+"$COLOR1                 os   o  o    s"
+"$COLOR1            oo       s    s       ss"
+"$COLOR1        oooo     o            o     ssss"
+"$COLOR1       o    oo                    os    s"
+"$COLOR1      oo  o                          s  ss"
+"$COLOR1     o o o        oooooooooooo        s s s"
+"$COLOR1       o s       ooooooooooooo        s s"
+"$COLOR1    s  oo        oooooooooooooo        oo  s"
+"$COLOR1   o   o         ooooos  oooooo         o   s"
+"$COLOR1  o    o        soooo     soooo         o    s"
+"$COLOR1     os         oooo       soooo         so"
+"$COLOR1              ooosss   sssoooo              o"
+"$COLOR1     ss        oooo          ooos        so"
+"$COLOR1  s    s       oooo          oooo       o    o"
+"$COLOR1   s   s       ooo            ooo       o   o"
+"$COLOR1    s  ss     oooo            ooos     oo  s"
+"$COLOR1       s s  soooos            sooooo  s o"
+"$COLOR1     s s s                            o o o"
+"$COLOR1      ss  s                          o  oo"
+"$COLOR1       s    ss                    oo    o"
+"$COLOR1        #sss     s            o     oooo"
+"$COLOR1            ss       s    s       oo"
+"$COLOR1                 ss   s  o    o"
+"$COLOR1                     ssssss"
 )
 
 # AxOS banner lines
@@ -44,44 +42,37 @@ banner_lines=(
 "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 )
 
-# Print logo + banner side-by-side
+# Determine max line count
+max_lines=${#ascii_logo[@]}
+[ ${#banner_lines[@]} -gt $max_lines ] && max_lines=${#banner_lines[@]}
+
 echo
-for i in "${!ascii_logo[@]}"; do
-    logo="${ascii_logo[i]//\$2/$COLOR2}"
-    banner="${banner_lines[i]:-}"
-    printf "%-50s  ${COLOR1}%-40s${RESET}\n" "$logo" "$banner"
+
+# Print ASCII + banner side-by-side
+for ((i = 0; i < max_lines; i++)); do
+    left="${ascii_logo[i]:-}"
+    right="${banner_lines[i]:-}"
+    printf "%-50s  ${COLOR1}%-40s${RESET}\n" "$left" "$right"
 done
 
 echo
 
 # ───── System Info Box ─────
-BOLD_LABEL="$COLOR1"
-NORMAL_LABEL="$RESET"
-
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
-UPTIME="$(uptime -p)"
+UPTIME="$(uptime -p | sed 's/up //')"
 SHELL="$SHELL"
 WM="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
 TERM="$TERM"
 CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs | cut -c1-22)"
 RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
-STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
+DISK="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Box: exactly 76 characters wide
+# Info box (width = 76)
 echo -e "${COLOR1}╭──────────────────────────────────────────────────────────────╮${RESET}"
-printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "OS:" "$OS"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "Kernel:" "$KERNEL"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s${COLOR1}│\n" "Uptime:" "$UPTIME"
-
-printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "Shell:" "$SHELL"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "WM/DE:" "$WM"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s${COLOR1}│\n" "Terminal:" "$TERM"
-
-printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "CPU:" "$CPU"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "RAM:" "$RAM"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s${COLOR1}│\n" "Packages:" "$PKGS"
-
-printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s%46s${COLOR1}│\n" "Storage:" "$STORAGE" ""
+printf "${COLOR1}│${RESET} OS: %-21s Kernel: %-17s Uptime: %-10s ${COLOR1}│\n" "$OS" "$KERNEL" "$UPTIME"
+printf "${COLOR1}│${RESET} Shell: %-18s WM/DE: %-17s Terminal: %-9s ${COLOR1}│\n" "$SHELL" "$WM" "$TERM"
+printf "${COLOR1}│${RESET} CPU: %-22s RAM: %-12s Packages: %-6s ${COLOR1}│\n" "$CPU" "$RAM" "$PKGS"
+printf "${COLOR1}│${RESET} Storage: %-57s ${COLOR1}│\n" "$DISK"
 echo -e "${COLOR1}╰──────────────────────────────────────────────────────────────╯${RESET}"

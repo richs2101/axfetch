@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# Neon magenta from your screenshot
-COLOR="\033[38;5;213m"
+COLOR="\033[38;5;213m"  # Your magenta-pink
 RESET="\033[0m"
 
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Define banner lines (6 rows)
+# Define your banner lines
 banner_lines=(
 "░█████╗░██╗░░██╗░█████╗░░██████╗"
 "██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
@@ -16,26 +15,28 @@ banner_lines=(
 "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 )
 
-# Read axos.txt logo lines into array, replacing $1 and $2 with color
+# Read axos.txt and replace color variables
 mapfile -t logo_lines < <(
-    while IFS= read -r line; do
-        line="${line//\$1/$COLOR}"
-        line="${line//\$2/$COLOR}"
-        echo -e "$line$RESET"
-    done < "$SCRIPT_DIR/axos.txt"
+  while IFS= read -r line; do
+    line="${line//\$1/$COLOR}"
+    line="${line//\$2/$COLOR}"
+    echo -e "$line$RESET"
+  done < "$SCRIPT_DIR/axos.txt"
 )
 
-# Find max lines (banner or logo)
-total_lines=$((${#banner_lines[@]} > ${#logo_lines[@]} ? ${#banner_lines[@]} : ${#logo_lines[@]}))
+# Get total line count
+banner_len=${#banner_lines[@]}
+logo_len=${#logo_lines[@]}
+total_lines=$(( banner_len > logo_len ? banner_len : logo_len ))
 
-# Print them side by side
-for ((i=0; i<total_lines; i++)); do
+# Print banner + logo side-by-side
+for ((i = 0; i < total_lines; i++)); do
     banner="${banner_lines[i]}"
     logo="${logo_lines[i]}"
-    printf "${COLOR}%-40s${RESET}  %s\n" "$banner" "$logo"
+    printf "${COLOR}%-40s${RESET} %s\n" "$banner" "$logo"
 done
 
-# System Info
+# System info
 echo
 echo -e "${COLOR}OS:${RESET} AxOS (Arch-based)"
 echo -e "${COLOR}Kernel:${RESET} $(uname -r)"

@@ -1,15 +1,40 @@
 #!/bin/bash
 
-# Colors
-COLOR="\033[38;5;213m"     # Magenta-pink
-BOLD_COLOR="\033[1;38;5;213m"
+COLOR1="\033[1;38;5;213m"  # Bold bright magenta-pink for labels and header
+COLOR2="\033[38;5;213m"    # Normal magenta for ASCII
 RESET="\033[0m"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Read ASCII logo into an array
-mapfile -t logo_lines < "$SCRIPT_DIR/axos.txt"
+# Inline ASCII logo
+ascii_logo=(
+"$2                     ooooos"
+"$2                 os   o  o    s"
+"$2            oo       s    s       ss"
+"$2        oooo     o            o     ssss"
+"$2       o    oo                    os    s"
+"$2      oo  o                          s  ss"
+"$2     o o o        oooooooooooo        s s s"
+"$2       o s       ooooooooooooo        s s"
+"$2    s  oo        oooooooooooooo        oo  s"
+"$2   o   o         ooooos  oooooo         o   s"
+"$2  o    o        soooo     soooo         o    s"
+"$2     os         oooo       soooo         so"
+"$2 s              ooosss   sssoooo              o"
+"$2     ss        oooo          ooos        so"
+"$2  s    s       oooo          oooo       o    o"
+"$2   s   s       ooo            ooo       o   o"
+"$2    s  ss     oooo            ooos     oo  s"
+"$2       s s  soooos            sooooo  s o"
+"$2     s s s                            o o o"
+"$2      ss  s                          o  oo"
+"$2       s    ss                    oo    o"
+"$2        #sss     s            o     oooo"
+"$2            ss       s    s       oo"
+"$2                 ss   s  o    o"
+"$2                     ssssss"
+)
 
-# AxOS banner
+# AxOS banner lines
 banner_lines=(
 "░█████╗░██╗░░██╗░█████╗░░██████╗"
 "██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
@@ -19,43 +44,44 @@ banner_lines=(
 "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 )
 
-# Print logo + banner side by side
-for i in {0..25}; do
-    printf "${COLOR}%-40s" "${logo_lines[i]}"
-    [[ $i -lt ${#banner_lines[@]} ]] && printf "%s" "${banner_lines[i]}"
-    echo -e "${RESET}"
+# Print logo + banner side-by-side
+echo
+for i in "${!ascii_logo[@]}"; do
+    logo="${ascii_logo[i]//\$2/$COLOR2}"
+    banner="${banner_lines[i]:-}"
+    printf "%-50s  ${COLOR1}%-40s${RESET}\n" "$logo" "$banner"
 done
 
 echo
 
-# Gather system info
+# ───── System Info Box ─────
+BOLD_LABEL="$COLOR1"
+NORMAL_LABEL="$RESET"
+
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
-UPTIME="$(uptime -p | sed 's/up //')"
+UPTIME="$(uptime -p)"
 SHELL="$SHELL"
 WM="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
 TERM="$TERM"
-CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
+CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs | cut -c1-22)"
 RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Build info lines
-info_lines=(
-"│ ${BOLD_COLOR}OS:${RESET} $OS   ${BOLD_COLOR}Kernel:${RESET} $KERNEL   ${BOLD_COLOR}Uptime:${RESET} $UPTIME"
-"│ ${BOLD_COLOR}Shell:${RESET} $SHELL   ${BOLD_COLOR}WM/DE:${RESET} $WM   ${BOLD_COLOR}Terminal:${RESET} $TERM"
-"│ ${BOLD_COLOR}CPU:${RESET} $CPU   ${BOLD_COLOR}RAM:${RESET} $RAM   ${BOLD_COLOR}Packages:${RESET} $PKGS"
-"│ ${BOLD_COLOR}Storage:${RESET} $STORAGE"
-)
+# Box: exactly 76 characters wide
+echo -e "${COLOR1}╭──────────────────────────────────────────────────────────────╮${RESET}"
+printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "OS:" "$OS"
+printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "Kernel:" "$KERNEL"
+printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s${COLOR1}│\n" "Uptime:" "$UPTIME"
 
-# Determine box width
-BOX_WIDTH=70
-TOP_BORDER="╭$(printf '─%.0s' $(seq 1 $((BOX_WIDTH - 2))))╮"
-BOTTOM_BORDER="╰$(printf '─%.0s' $(seq 1 $((BOX_WIDTH - 2))))╯"
+printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "Shell:" "$SHELL"
+printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "WM/DE:" "$WM"
+printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s${COLOR1}│\n" "Terminal:" "$TERM"
 
-# Print box
-echo -e "${COLOR}${TOP_BORDER}${RESET}"
-for line in "${info_lines[@]}"; do
-    printf "${COLOR}%-*s${RESET}\n" "$BOX_WIDTH" "$line│"
-done
-echo -e "${COLOR}${BOTTOM_BORDER}${RESET}"
+printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "CPU:" "$CPU"
+printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "RAM:" "$RAM"
+printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s${COLOR1}│\n" "Packages:" "$PKGS"
+
+printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s%46s${COLOR1}│\n" "Storage:" "$STORAGE" ""
+echo -e "${COLOR1}╰──────────────────────────────────────────────────────────────╯${RESET}"

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Color placeholders
+COLOR1="\033[1;36m"  # Cyan
+COLOR2="\033[1;35m"  # Magenta
+RESET="\033[0m"
+
+# Print ASCII logo with color substitutions
+awk -v c1="$COLOR1" -v c2="$COLOR2" -v reset="$RESET" '{gsub(/\$1/, c1); gsub(/\$2/, c2); print $0 reset}' "$(dirname "$0")/axos.txt"
+
+# System Info
+echo
+echo -e "${COLOR1}OS:${RESET} AxOS (Arch-based)"
+echo -e "${COLOR1}Kernel:${RESET} $(uname -r)"
+echo -e "${COLOR1}Uptime:${RESET} $(uptime -p)"
+echo -e "${COLOR1}Shell:${RESET} $SHELL"
+echo -e "${COLOR1}WM/DE:${RESET} ${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
+echo -e "${COLOR1}Terminal:${RESET} $TERM"
+echo -e "${COLOR1}CPU:${RESET} $(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
+echo -e "${COLOR1}RAM:${RESET} $(free -h | awk '/Mem:/ {print $3 "/" $2}')"
+echo -e "${COLOR1}Packages:${RESET} $(pacman -Q | wc -l)"

@@ -15,9 +15,9 @@ Credits to **Rudy-in** for making this ascii
 
 ---
 
+To uninstall this, do this : 'curl -fsSL https://raw.githubusercontent.com/richs2101/axfetch/main/uninstall.sh | bash'
+
 ## 📥 Install
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/richs2101/axfetch/main/install.sh | bash
-
-To uninstall this, do this : 'curl -fsSL https://raw.githubusercontent.com/richs2101/axfetch/main/uninstall.sh | bash'

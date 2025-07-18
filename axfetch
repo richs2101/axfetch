@@ -2,35 +2,31 @@
 
 COLOR2="\033[1;38;5;213m"  # Bold magenta for ASCII, banner, and labels
 RESET="\033[0m"
-SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Inline ASCII logo (no placeholders, pure ASCII)
+# Smaller ASCII logo version (simplified and fewer lines)
 ascii_logo=(
-"                     ooooos"
-"                 os   o  o    s"
-"            oo       s    s       ss"
-"        oooo     o            o     ssss"
-"       o    oo                    os    s"
-"      oo  o                          s  ss"
-"     o o o        oooooooooooo        s s s"
-"       o s       ooooooooooooo        s s"
-"    s  oo        oooooooooooooo        oo  s"
-"   o   o         ooooos  oooooo         o   s"
-"  o    o        soooo     soooo         o    s"
-"     os         oooo       soooo         so"
-" s              ooosss   sssoooo              o"
-"     ss        oooo          ooos        so"
-"  s    s       oooo          oooo       o    o"
-"   s   s       ooo            ooo       o   o"
-"    s  ss     oooo            ooos     oo  s"
-"       s s  soooos            sooooo  s o"
-"     s s s                            o o o"
-"      ss  s                          o  oo"
-"       s    ss                    oo    o"
-"        #sss     s            o     oooo"
-"            ss       s    s       oo"
-"                 ss   s  o    o"
-"                     ssssss"
+"               oooos"
+"            os  o  o  s"
+"         oo     s   s  ss"
+"      oooo    o       ssss"
+"     o   oo           os s"
+"    oo  o               ss"
+"   o o o    oooooooo     s s"
+"     o s    oooooooo     s "
+"   s  oo    oooooooo     oo s"
+"  o   o     oooos oo     o  s"
+" o    o    ssss    s     o  s"
+"    os     oooo     s    so"
+" s         oooss   s       o"
+"    ss     oooo       so"
+" s   s     oooo       o   o"
+"  s  s     ooo         o  o"
+"   s ss   oooo         oo s"
+"      s  sooooo       s o"
+"    s s            o  o o"
+"     ss            o  oo"
+"      s  ss       oo   o"
+"       sss  s    ooo  "
 )
 
 # AxOS banner lines
@@ -43,7 +39,6 @@ banner_lines=(
 "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 )
 
-# Print logo + banner side-by-side, both in $COLOR2 (bold magenta)
 echo
 for i in "${!ascii_logo[@]}"; do
     logo="${ascii_logo[i]}"
@@ -63,7 +58,6 @@ RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Function to truncate strings longer than max length
 truncate() {
   local str="$1"
   local maxlen=$2
@@ -74,7 +68,6 @@ truncate() {
   fi
 }
 
-# Box width 76 chars
 echo -e "${COLOR2}╭──────────────────────────────────────────────────────────────╮${RESET}"
 
 printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \

@@ -19,3 +19,8 @@ Credits to **Rudy-in** for making this ascii
 
 ```bash
 curl -s https://raw.githubusercontent.com/richs2101/axfetch/main/install.sh
+
+## 🧼 Uninstall
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/richs2101/axfetch/main/uninstall.sh | bash

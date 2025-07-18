@@ -1,11 +1,10 @@
 #!/bin/bash
 
-COLOR1="\033[1;38;5;213m"  # Bold bright magenta-pink for labels and header
-COLOR2="\033[38;5;213m"    # Normal magenta for ASCII
+COLOR2="\033[1;38;5;213m"  # Bold magenta for ASCII, banner, and labels
 RESET="\033[0m"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Inline ASCII logo
+# Inline ASCII logo (using COLOR2)
 ascii_logo=(
 "$2                     ooooos"
 "$2                 os   o  o    s"
@@ -49,15 +48,12 @@ echo
 for i in "${!ascii_logo[@]}"; do
     logo="${ascii_logo[i]//\$2/$COLOR2}"
     banner="${banner_lines[i]:-}"
-    printf "%-50s  ${COLOR1}%-40s${RESET}\n" "$logo" "$banner"
+    printf "%-50s  ${COLOR2}%-40s${RESET}\n" "$logo" "$banner"
 done
 
 echo
 
 # ───── System Info Box ─────
-BOLD_LABEL="$COLOR1"
-NORMAL_LABEL="$RESET"
-
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
 UPTIME="$(uptime -p)"
@@ -69,19 +65,33 @@ RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Box: exactly 76 characters wide
-echo -e "${COLOR1}╭──────────────────────────────────────────────────────────────╮${RESET}"
-printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "OS:" "$OS"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "Kernel:" "$KERNEL"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s${COLOR1}│\n" "Uptime:" "$UPTIME"
+# Function to truncate strings longer than max length
+truncate() {
+  local str="$1"
+  local maxlen=$2
+  if [ ${#str} -gt $maxlen ]; then
+    echo "${str:0:maxlen-3}..."
+  else
+    echo "$str"
+  fi
+}
 
-printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "Shell:" "$SHELL"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "WM/DE:" "$WM"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s${COLOR1}│\n" "Terminal:" "$TERM"
+# Box width 76 chars
+echo -e "${COLOR2}╭──────────────────────────────────────────────────────────────╮${RESET}"
 
-printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "CPU:" "$CPU"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s" "RAM:" "$RAM"
-printf "${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s${COLOR1}│\n" "Packages:" "$PKGS"
+printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \
+  "OS:" "$(truncate "$OS" 18)" "Kernel:" "$(truncate "$KERNEL" 30)"
 
-printf "${COLOR1}│${RESET} ${BOLD_LABEL}%-8s${NORMAL_LABEL} %-13s%46s${COLOR1}│\n" "Storage:" "$STORAGE" ""
-echo -e "${COLOR1}╰──────────────────────────────────────────────────────────────╯${RESET}"
+printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \
+  "Uptime:" "$(truncate "$UPTIME" 18)" "Shell:" "$(truncate "$SHELL" 30)"
+
+printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \
+  "WM/DE:" "$(truncate "$WM" 18)" "Terminal:" "$(truncate "$TERM" 30)"
+
+printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \
+  "CPU:" "$(truncate "$CPU" 18)" "RAM:" "$(truncate "$RAM" 30)"
+
+printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \
+  "Packages:" "$(truncate "$PKGS" 18)" "Storage:" "$(truncate "$STORAGE" 30)"
+
+echo -e "${COLOR2}╰──────────────────────────────────────────────────────────────╯${RESET}"

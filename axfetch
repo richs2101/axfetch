@@ -1,26 +1,32 @@
 #!/bin/bash
 
 COLOR1="\033[38;5;213m"  # Bright magenta-pink
-COLOR2="\033[38;5;213m"
 RESET="\033[0m"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Banner text (logo title)
-echo -e "${COLOR1}"
-echo "░█████╗░██╗░░██╗░█████╗░░██████╗"
-echo "██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
-echo "███████║░╚███╔╝░██║░░██║╚█████╗░"
-echo "██╔══██║░██╔██╗░██║░░██║░╚═══██╗"
-echo "██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝"
-echo "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
-echo -e "$RESET"
+# Create temp files
+BANNER=$(mktemp)
+LOGO=$(mktemp)
 
-# ASCII logo
+# Write banner to temp
+cat > "$BANNER" << EOF
+░█████╗░██╗░░██╗░█████╗░░██████╗
+██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝
+███████║░╚███╔╝░██║░░██║╚█████╗░
+██╔══██║░██╔██╗░██║░░██║░╚═══██╗
+██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝
+╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░
+EOF
+
+# Process logo file and apply color to $1 and $2
 while IFS= read -r line; do
     line="${line//\$1/$COLOR1}"
-    line="${line//\$2/$COLOR2}"
+    line="${line//\$2/$COLOR1}"
     echo -e "$line$RESET"
-done < "$SCRIPT_DIR/axos.txt"
+done < "$SCRIPT_DIR/axos.txt" > "$LOGO"
+
+# Combine side by side
+paste -d "  " <(cat "$BANNER") "$LOGO"
 
 # System Info
 echo
@@ -34,3 +40,6 @@ echo -e "${COLOR1}CPU:${RESET} $(grep -m1 'model name' /proc/cpuinfo | cut -d ':
 echo -e "${COLOR1}RAM:${RESET} $(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 echo -e "${COLOR1}Packages:${RESET} $(pacman -Q | wc -l)"
 echo -e "${COLOR1}Storage:${RESET} $(df -h / | awk 'NR==2 {print $3 "/" $2}')"
+
+# Cleanup temp files
+rm -f "$BANNER" "$LOGO"

@@ -1,8 +1,8 @@
 # axfetch — Fastfetch for AxOS
 
-**axfetch** is a custom fastfetch-like system information tool designed specifically for **AxOS**, an Arch-based Linux distribution. It displays beautiful system info alongside a custom ASCII logo, made by **Rudy-in**.
+**axfetch** is a custom fastfetch-like system information tool designed specifically for **AxOS**, an Arch-based Linux distribution. It displays beautiful system info alongside a custom ASCII logo, made by **rudy-in**.
 
-Credits to **Rudy-in** for making this ascii
+Credits to **rudy-in** for making this ascii
 ---
 
 ## ✨ Features

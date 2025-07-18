@@ -4,33 +4,33 @@ COLOR2="\033[1;38;5;213m"  # Bold magenta for ASCII, banner, and labels
 RESET="\033[0m"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Inline ASCII logo (using COLOR2)
+# Inline ASCII logo (no placeholders, pure ASCII)
 ascii_logo=(
-"$2                     ooooos"
-"$2                 os   o  o    s"
-"$2            oo       s    s       ss"
-"$2        oooo     o            o     ssss"
-"$2       o    oo                    os    s"
-"$2      oo  o                          s  ss"
-"$2     o o o        oooooooooooo        s s s"
-"$2       o s       ooooooooooooo        s s"
-"$2    s  oo        oooooooooooooo        oo  s"
-"$2   o   o         ooooos  oooooo         o   s"
-"$2  o    o        soooo     soooo         o    s"
-"$2     os         oooo       soooo         so"
-"$2 s              ooosss   sssoooo              o"
-"$2     ss        oooo          ooos        so"
-"$2  s    s       oooo          oooo       o    o"
-"$2   s   s       ooo            ooo       o   o"
-"$2    s  ss     oooo            ooos     oo  s"
-"$2       s s  soooos            sooooo  s o"
-"$2     s s s                            o o o"
-"$2      ss  s                          o  oo"
-"$2       s    ss                    oo    o"
-"$2        #sss     s            o     oooo"
-"$2            ss       s    s       oo"
-"$2                 ss   s  o    o"
-"$2                     ssssss"
+"                     ooooos"
+"                 os   o  o    s"
+"            oo       s    s       ss"
+"        oooo     o            o     ssss"
+"       o    oo                    os    s"
+"      oo  o                          s  ss"
+"     o o o        oooooooooooo        s s s"
+"       o s       ooooooooooooo        s s"
+"    s  oo        oooooooooooooo        oo  s"
+"   o   o         ooooos  oooooo         o   s"
+"  o    o        soooo     soooo         o    s"
+"     os         oooo       soooo         so"
+" s              ooosss   sssoooo              o"
+"     ss        oooo          ooos        so"
+"  s    s       oooo          oooo       o    o"
+"   s   s       ooo            ooo       o   o"
+"    s  ss     oooo            ooos     oo  s"
+"       s s  soooos            sooooo  s o"
+"     s s s                            o o o"
+"      ss  s                          o  oo"
+"       s    ss                    oo    o"
+"        #sss     s            o     oooo"
+"            ss       s    s       oo"
+"                 ss   s  o    o"
+"                     ssssss"
 )
 
 # AxOS banner lines
@@ -43,14 +43,12 @@ banner_lines=(
 "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 )
 
-# Print logo + banner side-by-side
+# Print logo + banner side-by-side, both in $COLOR2 (bold magenta)
 echo
 for i in "${!ascii_logo[@]}"; do
-    logo="${ascii_logo[i]//\$2/$COLOR2}"
-    banner="${banner_lines[i]:-}"
-    printf "%-50s  ${COLOR2}%-40s${RESET}\n" "$logo" "$banner"
+    logo="${ascii_logo[i]}"
+    printf "${COLOR2}%-50s  %-40s${RESET}\n" "$logo" "${banner_lines[i]:-}"
 done
-
 echo
 
 # ───── System Info Box ─────

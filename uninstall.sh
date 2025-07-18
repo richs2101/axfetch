@@ -2,7 +2,20 @@
 
 echo "🧹 Uninstalling axfetch..."
 
-sudo rm -f /usr/local/bin/axfetch
-rm -rf ~/.axfetch
+# Remove the global axfetch command
+if [ -f /usr/local/bin/axfetch ]; then
+    sudo rm /usr/local/bin/axfetch
+    echo "✔️ Removed: /usr/local/bin/axfetch"
+else
+    echo "ℹ️ No global axfetch command found"
+fi
 
-echo "✅ axfetch has been removed."
+# Remove axfetch directory from home
+if [ -d "$HOME/.axfetch" ]; then
+    rm -rf "$HOME/.axfetch"
+    echo "✔️ Removed: ~/.axfetch"
+else
+    echo "ℹ️ No ~/.axfetch directory found"
+fi
+
+echo "✅ axfetch has been completely uninstalled."

@@ -1,13 +1,15 @@
 #!/bin/bash
 
-# Bright magenta for both colors
+# Bright magenta for both parts of the logo
 COLOR1="\033[1;35m"
 COLOR2="\033[1;35m"
 RESET="\033[0m"
 
-# Locate the ASCII logo file
+# Path to the axos.txt file
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
-cat "$SCRIPT_DIR/axos.txt" | sed "s/\\\$1/$COLOR1/g; s/\\\$2/$COLOR2/g"
+
+# Correctly replace \$1 and \$2 with terminal color codes
+sed -e "s/\\\$1/${COLOR1}/g" -e "s/\\\$2/${COLOR2}/g" "$SCRIPT_DIR/axos.txt"
 
 # System info output
 echo

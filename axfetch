@@ -3,7 +3,7 @@
 COLOR2="\033[1;38;5;213m"  # Bold magenta for ASCII, banner, and labels
 RESET="\033[0m"
 
-# Inline ASCII logo (no placeholders, pure ASCII)
+# Inline ASCII logo (pure ASCII)
 ascii_logo=(
 "                     ooooos"
 "                 os   o  o    s"
@@ -42,8 +42,8 @@ banner_lines=(
 "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 )
 
-# Print logo + banner side-by-side, both in $COLOR2 (bold magenta)
 echo
+# Print logo + banner side-by-side
 for i in "${!ascii_logo[@]}"; do
     logo="${ascii_logo[i]}"
     printf "${COLOR2}%-50s  %-40s${RESET}\n" "$logo" "${banner_lines[i]:-}"
@@ -62,7 +62,7 @@ RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Create array of full label+value lines
+# Collect info lines
 info_lines=(
   "OS: $OS"
   "Kernel: $KERNEL"
@@ -82,12 +82,12 @@ for line in "${info_lines[@]}"; do
   (( ${#line} > max_len )) && max_len=${#line}
 done
 
-box_width=$((max_len + 4)) # 2 spaces padding + 2 border chars
+box_width=$((max_len + 4)) # padding + borders
 
 # Print top border
 printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-# Print each info line padded right, inside box
+# Print each line padded
 for line in "${info_lines[@]}"; do
   printf "${COLOR2}│ ${RESET}%-*s ${COLOR2}│${RESET}\n" $max_len "$line"
 done

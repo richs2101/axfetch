@@ -1,49 +1,36 @@
 #!/bin/bash
 
-# Neon magenta from your screenshot
-COLOR="\033[38;5;213m"
+COLOR1="\033[38;5;213m"  # Bright magenta-pink
+COLOR2="\033[38;5;213m"
 RESET="\033[0m"
-
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Define banner lines (6 rows)
-banner_lines=(
-"░█████╗░██╗░░██╗░█████╗░░██████╗"
-"██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
-"███████║░╚███╔╝░██║░░██║╚█████╗░"
-"██╔══██║░██╔██╗░██║░░██║░╚═══██╗"
-"██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝"
-"╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
-)
+# Banner text (logo title)
+echo -e "${COLOR1}"
+echo "░█████╗░██╗░░██╗░█████╗░░██████╗"
+echo "██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
+echo "███████║░╚███╔╝░██║░░██║╚█████╗░"
+echo "██╔══██║░██╔██╗░██║░░██║░╚═══██╗"
+echo "██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝"
+echo "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
+echo -e "$RESET"
 
-# Read axos.txt logo lines into array, replacing $1 and $2 with color
-mapfile -t logo_lines < <(
-    while IFS= read -r line; do
-        line="${line//\$1/$COLOR}"
-        line="${line//\$2/$COLOR}"
-        echo -e "$line$RESET"
-    done < "$SCRIPT_DIR/axos.txt"
-)
-
-# Find max lines (banner or logo)
-total_lines=$((${#banner_lines[@]} > ${#logo_lines[@]} ? ${#banner_lines[@]} : ${#logo_lines[@]}))
-
-# Print them side by side
-for ((i=0; i<total_lines; i++)); do
-    banner="${banner_lines[i]}"
-    logo="${logo_lines[i]}"
-    printf "${COLOR}%-40s${RESET}  %s\n" "$banner" "$logo"
-done
+# ASCII logo
+while IFS= read -r line; do
+    line="${line//\$1/$COLOR1}"
+    line="${line//\$2/$COLOR2}"
+    echo -e "$line$RESET"
+done < "$SCRIPT_DIR/axos.txt"
 
 # System Info
 echo
-echo -e "${COLOR}OS:${RESET} AxOS (Arch-based)"
-echo -e "${COLOR}Kernel:${RESET} $(uname -r)"
-echo -e "${COLOR}Uptime:${RESET} $(uptime -p)"
-echo -e "${COLOR}Shell:${RESET} $SHELL"
-echo -e "${COLOR}WM/DE:${RESET} ${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
-echo -e "${COLOR}Terminal:${RESET} $TERM"
-echo -e "${COLOR}CPU:${RESET} $(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
-echo -e "${COLOR}RAM:${RESET} $(free -h | awk '/Mem:/ {print $3 "/" $2}')"
-echo -e "${COLOR}Packages:${RESET} $(pacman -Q | wc -l)"
-echo -e "${COLOR}Storage:${RESET} $(df -h / | awk 'NR==2 {print $3 "/" $2}')"
+echo -e "${COLOR1}OS:${RESET} AxOS (Arch-based)"
+echo -e "${COLOR1}Kernel:${RESET} $(uname -r)"
+echo -e "${COLOR1}Uptime:${RESET} $(uptime -p)"
+echo -e "${COLOR1}Shell:${RESET} $SHELL"
+echo -e "${COLOR1}WM/DE:${RESET} ${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
+echo -e "${COLOR1}Terminal:${RESET} $TERM"
+echo -e "${COLOR1}CPU:${RESET} $(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
+echo -e "${COLOR1}RAM:${RESET} $(free -h | awk '/Mem:/ {print $3 "/" $2}')"
+echo -e "${COLOR1}Packages:${RESET} $(pacman -Q | wc -l)"
+echo -e "${COLOR1}Storage:${RESET} $(df -h / | awk 'NR==2 {print $3 "/" $2}')"

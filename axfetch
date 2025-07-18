@@ -1,29 +1,49 @@
 #!/bin/bash
 
-# Your exact magenta-pink color (from screenshot)
+# Your exact magenta-pink color (from your screenshot)
 COLOR1="\033[38;5;213m"
 COLOR2="\033[38;5;213m"
 RESET="\033[0m"
 
-# Path to axos.txt
+# Path to axos.txt (ASCII art)
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
 # Print ASCII logo with color replacements
-while IFS= read -r line; do
+if [[ -f "$SCRIPT_DIR/axos.txt" ]]; then
+  while IFS= read -r line; do
     line="${line//\$1/$COLOR1}"
     line="${line//\$2/$COLOR2}"
     echo -e "$line$RESET"
-done < "$SCRIPT_DIR/axos.txt"
+  done < "$SCRIPT_DIR/axos.txt"
+else
+  echo -e "${COLOR1}# ASCII art file axos.txt not found!${RESET}"
+fi
 
-# System Info
 echo
-echo -e "${COLOR1}OS:${RESET} AxOS (Arch-based)"
-echo -e "${COLOR1}Kernel:${RESET} $(uname -r)"
-echo -e "${COLOR1}Uptime:${RESET} $(uptime -p)"
+
+# Collect system info
+OS="AxOS (Arch-based)"
+KERNEL="$(uname -r)"
+UPTIME="$(uptime -p)"
+SHELL="$SHELL"
+WM_DE="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
+TERM="$TERM"
+CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
+RAM_USED="$(free -h | awk '/Mem:/ {print $3}')"
+RAM_TOTAL="$(free -h | awk '/Mem:/ {print $2}')"
+PACKAGES="$(pacman -Q | wc -l)"
+
+# Storage info: root filesystem usage
+storage_info="$(df -h / | awk 'NR==2 {print $3 " used / " $2 " total (" $5 " used)"}')"
+
+# Print system info with colors
+echo -e "${COLOR1}OS:${RESET} $OS"
+echo -e "${COLOR1}Kernel:${RESET} $KERNEL"
+echo -e "${COLOR1}Uptime:${RESET} $UPTIME"
 echo -e "${COLOR1}Shell:${RESET} $SHELL"
-echo -e "${COLOR1}WM/DE:${RESET} ${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
+echo -e "${COLOR1}WM/DE:${RESET} $WM_DE"
 echo -e "${COLOR1}Terminal:${RESET} $TERM"
-echo -e "${COLOR1}CPU:${RESET} $(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
-echo -e "${COLOR1}RAM:${RESET} $(free -h | awk '/Mem:/ {print $3 "/" $2}')"
-echo -e "${COLOR1}Packages:${RESET} $(pacman -Q | wc -l)"
-echo -e "${COLOR1}Storage:${RESET} $(df -h / | awk 'NR==2 {print $3 "/" $2}')"
+echo -e "${COLOR1}CPU:${RESET} $CPU"
+echo -e "${COLOR1}RAM:${RESET} $RAM_USED / $RAM_TOTAL"
+echo -e "${COLOR1}Packages:${RESET} $PACKAGES"
+echo -e "${COLOR1}Storage:${RESET} $storage_info"

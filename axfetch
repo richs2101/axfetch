@@ -1,10 +1,10 @@
 #!/bin/bash
 
-COLOR="\033[38;5;213m"  # Neon magenta-pink
+COLOR="\033[38;5;213m"
 RESET="\033[0m"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Define your 6-line banner
+# Define the 6 banner lines
 banner_lines=(
 "████╗░██╗░░██╗░█████╗░░██████╗"
 "██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
@@ -14,25 +14,25 @@ banner_lines=(
 "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 )
 
-# Read axos.txt into array and apply colors
+# Read logo and apply color
 mapfile -t logo_lines < <(
   while IFS= read -r line; do
     line="${line//\$1/$COLOR}"
     line="${line//\$2/$COLOR}"
-    echo -e "$line$RESET"
+    echo -e "$line"
   done < "$SCRIPT_DIR/axos.txt"
 )
 
-# Print combined output
+# Output: banner + logo side-by-side for first 6 lines
 for i in "${!logo_lines[@]}"; do
-  if [[ $i -lt ${#banner_lines[@]} ]]; then
-    printf "${COLOR}%-40s${RESET} %s\n" "${banner_lines[$i]}" "${logo_lines[$i]}"
+  if [[ $i -lt 6 ]]; then
+    echo -e "${COLOR}${banner_lines[$i]}${RESET} ${logo_lines[$i]}"
   else
     echo -e "${logo_lines[$i]}"
   fi
 done
 
-# System Info Section
+# System Info
 echo
 echo -e "${COLOR}OS:${RESET} AxOS (Arch-based)"
 echo -e "${COLOR}Kernel:${RESET} $(uname -r)"

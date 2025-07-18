@@ -1,12 +1,15 @@
 #!/bin/bash
 
-COLOR1="\033[1;36m"
+# Bright magenta for both colors
+COLOR1="\033[1;35m"
 COLOR2="\033[1;35m"
 RESET="\033[0m"
 
+# Locate the ASCII logo file
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 cat "$SCRIPT_DIR/axos.txt" | sed "s/\\\$1/$COLOR1/g; s/\\\$2/$COLOR2/g"
 
+# System info output
 echo
 echo -e "${COLOR1}OS:${RESET} AxOS (Arch-based)"
 echo -e "${COLOR1}Kernel:${RESET} $(uname -r)"

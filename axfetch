@@ -1,17 +1,19 @@
 #!/bin/bash
 
-# Bright magenta for both parts of the logo
-COLOR1="\033[1;35m"
-COLOR2="\033[1;35m"
+COLOR1="\033[1;35m"  # Bright magenta
+COLOR2="\033[1;35m"  # Use same for now
 RESET="\033[0m"
 
-# Path to the axos.txt file
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# Correctly replace \$1 and \$2 with terminal color codes
-sed -e "s/\\\$1/${COLOR1}/g" -e "s/\\\$2/${COLOR2}/g" "$SCRIPT_DIR/axos.txt"
+# ✅ Correctly render logo line-by-line
+while IFS= read -r line; do
+    line="${line//\$1/$COLOR1}"
+    line="${line//\$2/$COLOR2}"
+    echo -e "$line$RESET"
+done < "$SCRIPT_DIR/axos.txt"
 
-# System info output
+# System Info
 echo
 echo -e "${COLOR1}OS:${RESET} AxOS (Arch-based)"
 echo -e "${COLOR1}Kernel:${RESET} $(uname -r)"

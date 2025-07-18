@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# Color placeholders
-COLOR1="\033[1;36m"  # Cyan
-COLOR2="\033[1;35m"  # Magenta
+COLOR1="\033[1;36m"
+COLOR2="\033[1;35m"
 RESET="\033[0m"
 
-# Print ASCII logo with color substitutions
-awk -v c1="$COLOR1" -v c2="$COLOR2" -v reset="$RESET" '{gsub(/\$1/, c1); gsub(/\$2/, c2); print $0 reset}' "$(dirname "$0")/axos.txt"
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+cat "$SCRIPT_DIR/axos.txt" | sed "s/\\\$1/$COLOR1/g; s/\\\$2/$COLOR2/g"
 
-# System Info
 echo
 echo -e "${COLOR1}OS:${RESET} AxOS (Arch-based)"
 echo -e "${COLOR1}Kernel:${RESET} $(uname -r)"

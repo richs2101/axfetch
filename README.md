@@ -18,4 +18,4 @@ Credits to **Rudy-in** for making this ascii
 ## 📥 Install
 
 ```bash
-curl -s https://raw.githubusercontent.com/richs2101/axfetch/main/install.sh | bash
+curl -s https://raw.githubusercontent.com/richs2101/axfetch/main/install.sh

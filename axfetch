@@ -1,19 +1,21 @@
 #!/bin/bash
 
-COLOR1="\033[1;35m"  # Bright magenta
-COLOR2="\033[1;35m"  # Use same for now
+# Exact magenta-pink from your screenshot
+COLOR1="\033[38;5;213m"
+COLOR2="\033[38;5;213m"
 RESET="\033[0m"
 
+# Path to axos.txt
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# ✅ Correctly render logo line-by-line
+# Read and print each line, replacing $1 and $2 with the exact color
 while IFS= read -r line; do
     line="${line//\$1/$COLOR1}"
     line="${line//\$2/$COLOR2}"
     echo -e "$line$RESET"
 done < "$SCRIPT_DIR/axos.txt"
 
-# System Info
+# System Info section
 echo
 echo -e "${COLOR1}OS:${RESET} AxOS (Arch-based)"
 echo -e "${COLOR1}Kernel:${RESET} $(uname -r)"

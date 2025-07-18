@@ -1,40 +1,41 @@
 #!/bin/bash
 
-COLOR="\033[38;5;213m"        # Magenta-pink (AxOS color)
-BOLD_COLOR="\033[1;38;5;213m" # Bold magenta-pink
+# Colors
+COLOR1="\033[1;38;5;213m"  # Bold bright magenta
+COLOR2="\033[0;38;5;213m"  # Normal bright magenta
 RESET="\033[0m"
 SCRIPT_DIR="$(dirname "$(realpath "$0")")"
 
-# ASCII logo
-read -r -d '' LOGO <<'EOF'
-$1                     ooooos
-$1                 os   o  o    s
-$1            oo       s    s       ss
-$1        oooo     o            o     ssss
-$1       o    oo                    os    s
-$1      oo  o                          s  ss
-$1     o o o        oooooooooooo        s s s
-$1       o s       ooooooooooooo        s s
-$1    s  oo        oooooooooooooo        oo  s
-$1   o   o         ooooos  oooooo         o   s
-$1  o    o        soooo     soooo         o    s
-$1     os         oooo       soooo         so
-$1              ooosss   sssoooo              o
-$1     ss        oooo          ooos        so
-$1  s    s       oooo          oooo       o    o
-$1   s   s       ooo            ooo       o   o
-$1    s  ss     oooo            ooos     oo  s
-$1       s s  soooos            sooooo  s o
-$1     s s s                            o o o
-$1      ss  s                          o  oo
-$1       s    ss                    oo    o
-$1        #sss     s            o     oooo
-$1            ss       s    s       oo
-$1                 ss   s  o    o
-$1                     ssssss
+# Store ASCII logo into a variable (AxOS logo)
+read -r -d '' ASCII_LOGO <<'EOF'
+                     ooooos
+                 os   o  o    s
+            oo       s    s       ss
+        oooo     o            o     ssss
+       o    oo                    os    s
+      oo  o                          s  ss
+     o o o        oooooooooooo        s s s
+       o s       ooooooooooooo        s s
+    s  oo        oooooooooooooo        oo  s
+   o   o         ooooos  oooooo         o   s
+  o    o        soooo     soooo         o    s
+     os         oooo       soooo         so
+              ooosss   sssoooo              o
+     ss        oooo          ooos        so
+  s    s       oooo          oooo       o    o
+   s   s       ooo            ooo       o   o
+    s  ss     oooo            ooos     oo  s
+       s s  soooos            sooooo  s o
+     s s s                            o o o
+      ss  s                          o  oo
+       s    ss                    oo    o
+        #sss     s            o     oooo
+            ss       s    s       oo
+                 ss   s  o    o
+                     ssssss
 EOF
 
-# AxOS Banner
+# Banner text
 read -r -d '' BANNER <<'EOF'
 ░█████╗░██╗░░██╗░█████╗░░██████╗
 ██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝
@@ -44,31 +45,29 @@ read -r -d '' BANNER <<'EOF'
 ╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░
 EOF
 
-# System info
+# Gather system info
 OS="AxOS (Arch-based)"
-KERNEL="$(uname -r)"
-UPTIME="$(uptime -p | sed 's/^up //')"
-SHELL="$SHELL"
+KERNEL=$(uname -r)
+UPTIME=$(uptime -p | sed 's/up //')
+SHELL_NAME="$SHELL"
 WM="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
-TERM="$TERM"
-CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
-RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
-PKGS="$(pacman -Q | wc -l)"
-DISK="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
+TERM_NAME="$TERM"
+CPU=$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)
+RAM=$(free -h | awk '/Mem:/ {print $3 "/" $2}')
+PKGS=$(pacman -Q | wc -l)
+DISK=$(df -h / | awk 'NR==2 {print $3 "/" $2}')
 
-# Print logo
-echo -e "$COLOR"
-echo "$LOGO" | sed "s/\$1/$COLOR/g"
-echo -e "$RESET"
+# Combine banner and logo side by side
+paste <(echo "$ASCII_LOGO") <(echo "$BANNER" | sed "s/^/    /") | while IFS= read -r line; do
+    echo -e "${COLOR1}${line}${RESET}"
+done
 
-# Print banner
-echo -e "$COLOR$BANNER$RESET"
-echo
-
-# System Info (same layout as the sketch you uploaded)
-echo -e "${COLOR}──────────────────────────────────────────────────────────────╮"
-printf "│ ${BOLD_COLOR}OS:${RESET} %s  ${BOLD_COLOR}Kernel:${RESET} %s  ${BOLD_COLOR}Uptime:${RESET} %s │\n" "$OS" "$KERNEL" "$UPTIME"
-printf "│ ${BOLD_COLOR}Shell:${RESET} %s  ${BOLD_COLOR}WM/DE:${RESET} %s  ${BOLD_COLOR}Terminal:${RESET} %s │\n" "$SHELL" "$WM" "$TERM"
-printf "│ ${BOLD_COLOR}CPU:${RESET} %s  ${BOLD_COLOR}RAM:${RESET} %s  ${BOLD_COLOR}Packages:${RESET} %s │\n" "$CPU" "$RAM" "$PKGS"
-printf "│ ${BOLD_COLOR}Storage:${RESET} %s │\n" "$DISK"
-echo -e "${COLOR}╰──────────────────────────────────────────────────────────────╯${RESET}"
+# Print the system info box
+echo -e "${COLOR2}"
+echo "╭──────────────────────────────────────────────────────────────╮"
+printf "│ ${COLOR1}OS:${RESET} %-20s ${COLOR1}Kernel:${RESET} %-18s ${COLOR1}Uptime:${RESET} %-8s │\n" "$OS" "$KERNEL" "$UPTIME"
+printf "│ ${COLOR1}Shell:${RESET} %-17s ${COLOR1}WM/DE:${RESET} %-18s ${COLOR1}Terminal:${RESET} %-10s │\n" "$SHELL_NAME" "$WM" "$TERM_NAME"
+printf "│ ${COLOR1}CPU:${RESET} %-24s ${COLOR1}RAM:${RESET} %-14s ${COLOR1}Packages:${RESET} %-6s │\n" "$CPU" "$RAM" "$PKGS"
+printf "│ ${COLOR1}Storage:${RESET} %-54s │\n" "$DISK"
+echo "╰──────────────────────────────────────────────────────────────╯"
+echo -e "${RESET}"

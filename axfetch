@@ -51,45 +51,51 @@ for i in "${!ascii_logo[@]}"; do
 done
 echo
 
-# ───── System Info Box ─────
+# ───── System Info ─────
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
 UPTIME="$(uptime -p)"
 SHELL="$SHELL"
 WM="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
 TERM="$TERM"
-CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs | cut -c1-22)"
+CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
 RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Function to truncate strings longer than max length
-truncate() {
-  local str="$1"
-  local maxlen=$2
-  if [ ${#str} -gt $maxlen ]; then
-    echo "${str:0:maxlen-3}..."
-  else
-    echo "$str"
-  fi
-}
+# Prepare array of label/value pairs
+declare -a labels=("OS:" "Kernel:" "Uptime:" "Shell:" "WM/DE:" "Terminal:" "CPU:" "RAM:" "Packages:" "Storage:")
+declare -a values=("$OS" "$KERNEL" "$UPTIME" "$SHELL" "$WM" "$TERM" "$CPU" "$RAM" "$PKGS" "$STORAGE")
 
-# Box width 76 chars
-echo -e "${COLOR2}╭──────────────────────────────────────────────────────────────╮${RESET}"
+# Find max length of labels and max length of values
+max_label_len=0
+max_value_len=0
 
-printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \
-  "OS:" "$(truncate "$OS" 18)" "Kernel:" "$(truncate "$KERNEL" 30)"
+for label in "${labels[@]}"; do
+  (( ${#label} > max_label_len )) && max_label_len=${#label}
+done
+for val in "${values[@]}"; do
+  (( ${#val} > max_value_len )) && max_value_len=${#val}
+done
 
-printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \
-  "Uptime:" "$(truncate "$UPTIME" 18)" "Shell:" "$(truncate "$SHELL" 30)"
+# Width of the box:
+# Two columns side by side: label+value + label+value with 3 spaces between, plus 4 border chars and padding.
+# So total width = 4 (borders) + 2*(max_label_len + 1 space + max_value_len) + 3 spaces between columns
+box_width=$((4 + 2*(max_label_len + 1 + max_value_len) + 3))
 
-printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \
-  "WM/DE:" "$(truncate "$WM" 18)" "Terminal:" "$(truncate "$TERM" 30)"
+# Draw top border
+printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \
-  "CPU:" "$(truncate "$CPU" 18)" "RAM:" "$(truncate "$RAM" 30)"
+# Print 5 rows with two columns each, labels and values side by side
+for ((i=0; i<5; i++)); do
+  left_label=${labels[i*2]}
+  left_val=${values[i*2]}
+  right_label=${labels[i*2+1]}
+  right_val=${values[i*2+1]}
 
-printf "${COLOR2}│${RESET} ${COLOR2}%-8s${RESET} %-18s   ${COLOR2}%-8s${RESET} %-30s${COLOR2}│\n" \
-  "Packages:" "$(truncate "$PKGS" 18)" "Storage:" "$(truncate "$STORAGE" 30)"
+  printf "${COLOR2}│${RESET} %-${max_label_len}s %-${max_value_len}s   %-${max_label_len}s %-${max_value_len}s ${COLOR2}│${RESET}\n" \
+    "$left_label" "$left_val" "$right_label" "$right_val"
+done
 
-echo -e "${COLOR2}╰──────────────────────────────────────────────────────────────╯${RESET}"
+# Draw bottom border
+printf "${COLOR2}╰%s╯${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"

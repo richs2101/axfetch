@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Colors
-COLOR2="\033[1;38;5;213m" # pinkish
+COLOR2="\033[1;38;5;213m"
 RESET="\033[0m"
 
-# Logo
+# ASCII Logo (left side)
 ascii_logo=(
 "              o   o              "
 "         oo   o   o   ss         "
@@ -26,36 +26,15 @@ ascii_logo=(
 "              s   o              "
 )
 
-# Banner
+# AxOS Banner (top-right)
 banner_lines=(
-"                                 "
-"                                 "
-"                                 "
-"                                 "
-"                                 "
-"                                 "
 "   █████╗ ██╗  ██╗ ██████╗ ███████╗"
 "  ██╔══██╗╚██╗██╔╝██╔═══██╗██╔════╝"
 "  ███████║ ╚███╔╝ ██║   ██║███████╗"
 "  ██╔══██║ ██╔██╗ ██║   ██║╚════██║"
 "  ██║  ██║██╔╝ ██╗╚██████╔╝███████║"
 "  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝"
-"                                 "
-"                                 "
-"                                 "
-"                                 "
-"                                 "
-"                                 "
-"                                 "
 )
-
-
-# Print logo and banner side by side
-echo
-for i in "${!ascii_logo[@]}"; do
-  printf "${COLOR2}%-33s  %s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]:-}"
-done
-echo
 
 # Gather system info
 OS="AxOS (Arch-based)"
@@ -69,46 +48,51 @@ RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Build info lines (label: value)
 info_lines=(
-  "OS:$OS"
-  "Kernel:$KERNEL"
-  "Uptime:$UPTIME"
-  "Shell:$SHELL"
-  "DE:$DE"
-  "Terminal:$TERM"
-  "CPU:$CPU"
-  "RAM:$RAM"
-  "Packages:$PKGS"
-  "Storage:$STORAGE"
+  "OS: $OS"
+  "Kernel: $KERNEL"
+  "Uptime: $UPTIME"
+  "Shell: $SHELL"
+  "DE: $DE"
+  "Terminal: $TERM"
+  "CPU: $CPU"
+  "RAM: $RAM"
+  "Packages: $PKGS"
+  "Storage: $STORAGE"
 )
 
-# Calculate max width of visible lines (without color codes)
-max_width=0
+# Determine max width of info lines
+max_info_width=0
 for line in "${info_lines[@]}"; do
-  label="${line%%:*}"
-  value="${line#*:}"
-  width=$(( ${#label} + 2 + ${#value} )) # account for ": "
-  (( width > max_width )) && max_width=$width
-done
-box_width=$((max_width + 4))  # padding + border space
-
-# Top border
-printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
-
-# Print lines
-for line in "${info_lines[@]}"; do
-  label="${line%%:*}"
-  value="${line#*:}"
-  label_colored="${COLOR2}${label}:${RESET}"
-
-  # Truncate value if too long
-  available_space=$((box_width - ${#label} - 6))  # borders + ": "
-  [[ ${#value} -gt $available_space ]] && value="${value:0:$((available_space - 3))}..."
-
-  # Print padded line
-  printf "${COLOR2}│ ${label_colored} %-*s ${COLOR2}│${RESET}\n" $((box_width - ${#label} - 6)) "$value"
+  clean_length=$(echo -e "$line" | wc -c)
+  (( clean_length > max_info_width )) && max_info_width=$clean_length
 done
 
-# Bottom border
-printf "${COLOR2}╰%s╯${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
+# Padding for box
+box_inner_width=$((max_info_width + 2))  # 1 space padding left and right
+border_top="╭$(printf '─%.0s' $(seq 1 $box_inner_width))╮"
+border_bot="╰$(printf '─%.0s' $(seq 1 $box_inner_width))╯"
+
+# Compose system info box (as lines)
+sys_box=()
+sys_box+=("$border_top")
+for line in "${info_lines[@]}"; do
+  printf -v padded_line "│ %-*s │" "$box_inner_width" "$line"
+  sys_box+=("$padded_line")
+done
+sys_box+=("$border_bot")
+
+# Compose right-hand side block (banner + info box)
+right_panel=()
+for line in "${banner_lines[@]}"; do right_panel+=("$line"); done
+for line in "${sys_box[@]}"; do right_panel+=("$line"); done
+
+# Merge logo + right panel
+echo
+total_lines=$(( ${#ascii_logo[@]} > ${#right_panel[@]} ? ${#ascii_logo[@]} : ${#right_panel[@]} ))
+for ((i = 0; i < total_lines; i++)); do
+  left="${ascii_logo[i]:-$(printf ' %.0s' {1..33})}"
+  right="${right_panel[i]:-}"
+  printf "${COLOR2}%-33s  %s${RESET}\n" "$left" "$right"
+done
+echo

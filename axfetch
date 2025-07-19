@@ -6,57 +6,44 @@ RESET="\033[0m"
 
 # ASCII Logo (left side)
 ascii_logo=(
-"             .'.  '   '  .'.                             "
-"                    .'.     .'     '      .'.                       "
-"               .'.        .'.       .'.        .'.                  "
-"          .;:;,,,'.....,,.             .''.. ..'..',;,.             "
-"        ':        .,.                       .'.        ,.           "
-"       .,,   .'..                                .'.   .'.          "
-"       ' '  '.                .. ..                ..  . .        "
-"      , .' .'          .;cccllol llllcc:;.          .  .. '       "
-"     '  .. ,           :oooooooo olllllll;           ' ..  .      "
-"    ..  ....          .ooooooooo ooolllllc           ....  ..     "
-"   .'   .''           ,oooooooc   cooollll'           '..   ..    "
-"   '    ':            coooooo:     :ooooll:            ;'    '    "
-"  '     ,.           .oooooo,       ;oooool.           .,     '   "
-" '     .,            ;ooooo.         'ooooo,            ,.     '  "
-"'...'.               loooooc,.     .,coooooc               .''..  "
-";,.                 'looo,             :oooo.                 .;   "
-" .   .'.            :lllc              .oooo;            .'.   '  "
-" ..     '          .llll,               coool           ,     ..  "
-"  ..    ',         ,llll.               .oooo.         ;,    ..   "
-"   .    .,.        clll;                 cooo;        .,.    '    "
-"    .   ...       .llll.                 .oool.       '..   ,     "
-"     .  .. . ..,;:cccl:                   loooc::;'. ' ..  ,      "
-"     .. .. ..       .'.                   .;.       .. .. ..      "
-"      .. .  '                                       ,  ' ..       "
-"       ...  ..                                     ,.  '.'        "
-"        ''     ....                           .''.     ;;         "
-"         '...       .'.                   .'.       ..,c        "
-"            ....  .....';;,.         .;:;,'''.. ..,,.             "
-"                 ....       '       '       .''.                  "
-"                      ....   ..   ..   ..'.                       "
-"                           ...'' ''...                           "
+"              o   o              "
+"         oo   o   o   ss         "
+"     oooo  oo       os  ssss     "
+"    o  o                 s  s    "
+"   oo o     oooooooo     s ss   "
+"  o oo      ooooooooo      ss s  "
+"    oo     ooooo ooooo     so    "
+" s  o      oooo   oooo      o  s "
+"s o        oooo   oooo        o o"
+"s s       ooo       ooo       o o"
+" s  s     ooo       ooo     o  o "
+"    ss    oo         oo    oo    "
+"  s ss ssooo         ooooo oo o  "
+"   ss s                   o oo   "
+"    s  s                 o  o    "
+"     ssss  ss       oo  oooo     "
+"         ss   s   s   oo         "
+"              s   o              "
 )
 
-# AxOS Banner (right side)
+# AxOS Banner (top-right)
 banner_lines=(
-"░█████╗░██╗░░██╗░█████╗░░██████╗"
-"██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
-"███████║░╚███╔╝░██║░░██║╚█████╗░"
-"██╔══██║░██╔██╗░██║░░██║░╚═══██╗"
-"██║░░██║██╔╝╚██╗╚█████╔╝██████╔╝"
-"╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
+"   █████╗ ██╗  ██╗ ██████╗ ███████╗"
+"  ██╔══██╗╚██╗██╔╝██╔═══██╗██╔════╝"
+"  ███████║ ╚███╔╝ ██║   ██║███████╗"
+"  ██╔══██║ ██╔██╗ ██║   ██║╚════██║"
+"  ██║  ██║██╔╝ ██╗╚██████╔╝███████║"
+"  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝"
 )
 
-# System Information
+# Gather system info
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
 UPTIME="$(uptime -p)"
 SHELL="$SHELL"
 DE="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
 TERM="$TERM"
-CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xaxrds)"
+CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
 RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
@@ -74,19 +61,19 @@ info_lines=(
   "Storage: $STORAGE"
 )
 
-# Box Width
+# Determine max width of info lines
 max_info_width=0
 for line in "${info_lines[@]}"; do
   clean_length=$(echo -e "$line" | wc -c)
   (( clean_length > max_info_width )) && max_info_width=$clean_length
 done
 
-# Box Border
+# Padding for box
 box_inner_width=$((max_info_width + 2))  # 1 space padding left and right
 border_top="╭$(printf '─%.0s' $(seq 1 $box_inner_width))╮"
 border_bot="╰$(printf '─%.0s' $(seq 1 $box_inner_width))╯"
 
-# Build System Info Box
+# Compose system info box (as lines)
 sys_box=()
 sys_box+=("$border_top")
 for line in "${info_lines[@]}"; do
@@ -95,12 +82,13 @@ for line in "${info_lines[@]}"; do
 done
 sys_box+=("$border_bot")
 
-# Prepare for Output
+# Compose right-hand side block (banner + info box)
 right_panel=()
 for line in "${banner_lines[@]}"; do right_panel+=("$line"); done
 for line in "${sys_box[@]}"; do right_panel+=("$line"); done
 
-# Combine ASCII Logo and Banner
+# Merge logo + right panel
+echo
 total_lines=$(( ${#ascii_logo[@]} > ${#right_panel[@]} ? ${#ascii_logo[@]} : ${#right_panel[@]} ))
 for ((i = 0; i < total_lines; i++)); do
   left="${ascii_logo[i]:-$(printf ' %.0s' {1..33})}"

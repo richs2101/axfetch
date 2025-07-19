@@ -53,7 +53,7 @@ banner_lines=(
 # Print logo and banner side by side
 echo
 for i in "${!ascii_logo[@]}"; do
-  printf "${COLOR2}%-50s  %-40s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]:-}"
+  printf "${COLOR2}%-33s  %s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]:-}"
 done
 echo
 

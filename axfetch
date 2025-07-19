@@ -2,32 +2,27 @@
 
 COLOR2="\033[1;38;5;213m"  # Bold magenta
 RESET="\033[0m"
-COLOR3="\033[1;38;5;213m"  # Same color as banner
 
-# Inline new ASCII logo
+# Updated ASCII logo
 ascii_logo=(
-"                 *+++*+*"
-"             ++   +   +   **"
-"        ++   +++++     ++++*   **"
-"     +      ++             ++      *"
-"        ++                     **"
-"    +  +       ++++++++++*       *  *"
-"   + + +       +++++++++++       + * *"
-"  +  ++       ++++++ ++++++       ++  *"
-"     ++       +++++   +++++       ++"
-" +   +        ++++     ++++        +   *"
-"* **         ++++++   ++++++         *+ +"
-"* **         +++        *+++         *+ +"
-" *   *      *+++         +++       +   +"
-"     **     +++*         ++++     ++"
-"  *  **     +++           +++     ++  +"
-"   * * *  *++++           +++++  + + +"
-"    *  *                         +  +"
-"        *#                      +"
-"     #      **             ++      +"
-"        **   *****     +++++   ++"
-"             **   *   *   ++"
-"                 *******"
+"              o   o              "
+"         oo   o   o   ss         "
+"     oooo  oo       os  ssss     "
+"    o  o                 s  s    "
+"   oo o     oooooooo     s ss   "
+"  o oo      ooooooooo      ss s  "
+"    oo     ooooo ooooo     so    "
+" s  o      oooo   oooo      o  s "
+"s o        oooo   oooo        o o"
+"s s       ooo       ooo       o o"
+" s  s     ooo       ooo     o  o "
+"    ss    oo         oo    oo    "
+"  s ss ssooo         ooooo oo o  "
+"   ss s                   o oo   "
+"    s  s                 o  o    "
+"     ssss  ss       oo  oooo     "
+"         ss   s   s   oo         "
+"              s   o              "
 )
 
 # AxOS banner
@@ -43,7 +38,7 @@ banner_lines=(
 # Print logo + banner side by side
 echo
 for i in "${!ascii_logo[@]}"; do
-    printf "${COLOR2}%-50s  %-40s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]:-}"
+    printf "${COLOR2}%-50s  %-40s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]}"
 done
 echo
 
@@ -84,11 +79,9 @@ box_width=$((max_len + 4)) # padding + borders
 # Print top border
 printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-# Print each line with colored labels matching the banner
+# Print each line padded
 for line in "${info_lines[@]}"; do
-  label="${line%%:*}:"
-  value="${line#*:}"
-  printf "${COLOR3}│ ${COLOR3}%-10s${RESET}%-*s ${COLOR2}│${RESET}\n" "$label" $((box_width - 14)) "$value"
+  printf "${COLOR2}│ ${RESET}%-*s ${COLOR2}│${RESET}\n" $max_len "$line"
 done
 
 # Print bottom border

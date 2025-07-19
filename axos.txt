@@ -1,25 +1,18 @@
-
-
-                 *+++*+*                 
-             ++   +   +   **             
-        ++   +++++     ++++*   **        
-     +      ++             ++      *     
-        ++                     **        
-    +  +       ++++++++++*       *  *    
-   + + +       +++++++++++       + * *   
-  +  ++       ++++++ ++++++       ++  *  
-     ++       +++++   +++++       ++     
- +   +        ++++     ++++        +   * 
-* **         ++++++   ++++++         *+ +
-* **         +++        *+++         *+ +
- *   *      *+++         +++       +   + 
-     **     +++*         ++++     ++     
-  *  **     +++           +++     ++  +  
-   * * *  *++++           +++++  + + +   
-    *  *                         +  +    
-        *#                      +        
-     #      **             ++      +     
-        **   *****     +++++   ++        
-             **   *   *   ++             
-                 *******                 
-
+              o   o              
+         oo   o   o   ss         
+     oooo  oo       os  ssss     
+    o  o                 s  s    
+   oo o     oooooooo     s ss   
+  o oo      ooooooooo      ss s  
+    oo     ooooo ooooo     so    
+ s  o      oooo   oooo      o  s 
+s o        oooo   oooo        o o
+s s       ooo       ooo       o o
+ s  s     ooo       ooo     o  o 
+    ss    oo         oo    oo    
+  s ss ssooo         ooooo oo o  
+   ss s                   o oo   
+    s  s                 o  o    
+     ssss  ss       oo  oooo     
+         ss   s   s   oo         
+              s   o              

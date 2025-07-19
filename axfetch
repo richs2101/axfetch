@@ -1,9 +1,9 @@
 #!/bin/bash
 
-COLOR2="\033[1;38;5;213m"  # Bold magenta for ASCII, banner, and labels
+COLOR2="\033[1;38;5;213m"  # Bold magenta
 RESET="\033[0m"
 
-# Inline ASCII logo (pure ASCII)
+# Inline ASCII logo
 ascii_logo=(
 "                     ooooos"
 "                 os   o  o    s"
@@ -32,7 +32,7 @@ ascii_logo=(
 "                     ssssss"
 )
 
-# AxOS banner lines
+# AxOS banner
 banner_lines=(
 "░█████╗░██╗░░██╗░█████╗░░██████╗"
 "██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
@@ -42,15 +42,14 @@ banner_lines=(
 "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 )
 
+# Print logo + banner side by side
 echo
-# Print logo + banner side-by-side
 for i in "${!ascii_logo[@]}"; do
-    logo="${ascii_logo[i]}"
-    printf "${COLOR2}%-50s  %-40s${RESET}\n" "$logo" "${banner_lines[i]:-}"
+    printf "${COLOR2}%-50s  %-40s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]:-}"
 done
 echo
 
-# ───── System Info ─────
+# System info
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
 UPTIME="$(uptime -p)"
@@ -62,34 +61,35 @@ RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Collect info lines
+# Info lines
 info_lines=(
-  "OS: $OS"
-  "Kernel: $KERNEL"
-  "Uptime: $UPTIME"
-  "Shell: $SHELL"
-  "WM/DE: $WM"
-  "Terminal: $TERM"
-  "CPU: $CPU"
-  "RAM: $RAM"
-  "Packages: $PKGS"
-  "Storage: $STORAGE"
+  "OS:${OS}"
+  "Kernel:${KERNEL}"
+  "Uptime:${UPTIME}"
+  "Shell:${SHELL}"
+  "WM/DE:${WM}"
+  "Terminal:${TERM}"
+  "CPU:${CPU}"
+  "RAM:${RAM}"
+  "Packages:${PKGS}"
+  "Storage:${STORAGE}"
 )
 
-# Find longest line length
+# Calculate box width
 max_len=0
 for line in "${info_lines[@]}"; do
   (( ${#line} > max_len )) && max_len=${#line}
 done
-
-box_width=$((max_len + 4)) # padding + borders
+box_width=$((max_len + 4))
 
 # Print top border
 printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-# Print each line padded
+# Print each info line with colored label and normal value
 for line in "${info_lines[@]}"; do
-  printf "${COLOR2}│ ${RESET}%-*s ${COLOR2}│${RESET}\n" $max_len "$line"
+  label="${line%%:*}:"
+  value="${line#*:}"
+  printf "${COLOR2}│ ${COLOR2}%-10s${RESET}%-*s ${COLOR2}│${RESET}\n" "$label" $((box_width - 14)) "$value"
 done
 
 # Print bottom border

@@ -1,9 +1,10 @@
 #!/bin/bash
 
-COLOR2="\033[1;38;5;213m"  # Bold magenta
+# Colors
+COLOR2="\033[1;38;5;213m" # pinkish
 RESET="\033[0m"
 
-# Inline new ASCII logo
+# Logo
 ascii_logo=(
 "              o   o              "
 "         oo   o   o   ss         "
@@ -25,7 +26,7 @@ ascii_logo=(
 "              s   o              "
 )
 
-# AxOS banner
+# Banner
 banner_lines=(
 "                                 "
 "                                 "
@@ -49,14 +50,14 @@ banner_lines=(
 )
 
 
-# Print logo + banner side by side
+# Print logo and banner side by side
 echo
 for i in "${!ascii_logo[@]}"; do
-    printf "${COLOR2}%-50s  %-40s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]:-}"
+  printf "${COLOR2}%-50s  %-40s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]:-}"
 done
 echo
 
-# System info
+# Gather system info
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
 UPTIME="$(uptime -p)"
@@ -68,35 +69,46 @@ RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Collect info lines
+# Build info lines (label: value)
 info_lines=(
-  "OS: $OS"
-  "Kernel: $KERNEL"
-  "Uptime: $UPTIME"
-  "Shell: $SHELL"
-  "DE: $DE"
-  "Terminal: $TERM"
-  "CPU: $CPU"
-  "RAM: $RAM"
-  "Packages: $PKGS"
-  "Storage: $STORAGE"
+  "OS:$OS"
+  "Kernel:$KERNEL"
+  "Uptime:$UPTIME"
+  "Shell:$SHELL"
+  "DE:$DE"
+  "Terminal:$TERM"
+  "CPU:$CPU"
+  "RAM:$RAM"
+  "Packages:$PKGS"
+  "Storage:$STORAGE"
 )
 
-# Find longest line length
-max_len=0
+# Calculate max width of visible lines (without color codes)
+max_width=0
 for line in "${info_lines[@]}"; do
-  (( ${#line} > max_len )) && max_len=${#line}
+  label="${line%%:*}"
+  value="${line#*:}"
+  width=$(( ${#label} + 2 + ${#value} )) # account for ": "
+  (( width > max_width )) && max_width=$width
 done
+box_width=$((max_width + 4))  # padding + border space
 
-box_width=$((max_len + 4)) # padding + borders
-
-# Print top border
+# Top border
 printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-# Print each line padded
+# Print lines
 for line in "${info_lines[@]}"; do
-  printf "${COLOR2}│ ${RESET}%-*s ${COLOR2}│${RESET}\n" $max_len "$line"
+  label="${line%%:*}"
+  value="${line#*:}"
+  label_colored="${COLOR2}${label}:${RESET}"
+
+  # Truncate value if too long
+  available_space=$((box_width - ${#label} - 6))  # borders + ": "
+  [[ ${#value} -gt $available_space ]] && value="${value:0:$((available_space - 3))}..."
+
+  # Print padded line
+  printf "${COLOR2}│ ${label_colored} %-*s ${COLOR2}│${RESET}\n" $((box_width - ${#label} - 6)) "$value"
 done
 
-# Print bottom border
+# Bottom border
 printf "${COLOR2}╰%s╯${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"

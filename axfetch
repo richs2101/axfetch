@@ -3,33 +3,47 @@
 COLOR2="\033[1;38;5;213m"  # Bold magenta
 RESET="\033[0m"
 
-# ASCII logo
+# Inline ASCII logo
 ascii_logo=(
-"                     ooooos"
-"                 os   o  o    s"
-"            oo       s    s       ss"
-"        oooo     o            o     ssss"
-"       o    oo                    os    s"
-"      oo  o                          s  ss"
-"     o o o        oooooooooooo        s s s"
-"       o s       ooooooooooooo        s s"
-"    s  oo        oooooooooooooo        oo  s"
-"   o   o         ooooos  oooooo         o   s"
-"  o    o        soooo     soooo         o    s"
-"     os         oooo       soooo         so"
-" s              ooosss   sssoooo              o"
-"     ss        oooo          ooos        so"
-"  s    s       oooo          oooo       o    o"
-"   s   s       ooo            ooo       o   o"
-"    s  ss     oooo            ooos     oo  s"
-"       s s  soooos            sooooo  s o"
-"     s s s                            o o o"
-"      ss  s                          o  oo"
-"       s    ss                    oo    o"
-"        #sss     s            o     oooo"
-"            ss       s    s       oo"
-"                 ss   s  o    o"
-"                     ssssss"
+"                         c;:;c"
+"                     .'  .. ..  .."
+"                  ''     ,   .     .'"
+"              .,        ,     .        .."
+"          .,  .;;',. ,;         '; .'.,,.  '."
+"        cc.       ;:               ':       .,;"
+"       ;.      ,.                      ,.      :"
+"      .'.  .'                             .'   .'"
+"      ,..  .               .                .  .."
+"     . .  ,          .,:lllllll;,.          '  . '"
+"     ' .  '         coooooooollllll         .. . .."
+"    ;  . ,          oooooooooolllll.         ; '  '"
+"   ..  . ,         .ooooooo,oooolll'         ..'   ."
+"   ,   ''          ;oooooo. .oooollc          ''   ."
+"  .    ,,          looooo,   .ooooll          .;    '"
+"  '    ;           ooooo:     ,ooool.          :    ."
+" '     ,          .ooooo       loooo'          '     ;"
+" .  .'            ;oooo.        ooooc            ..   ."
+",:.               loooolc,   ,loooool               .::"
+"'';              .lloc           looo.              ,:,"
+" .   '.          ,lll,           ,ooo;           ,.  .."
+" .     ,         llll.           .oool         ,     ;"
+"  .    ,         llll             oooo         c    ."
+"  .    ''       .lll;             ;ooo.       .;    ,"
+"   '   ..       ;lll.              ooo:       ,,   '"
+"    .  . '      clll               cool      ..,   '"
+"    '  . .  .;,:ccc,               ,oooc::'  ; ,  ;"
+"     . .  .      .:.               .o.      .. ' .."
+"     .    .                                 ,  ' ,"
+"      '                                     .  .."
+"      ..   ..                             ''   ''"
+"       '.      ..                     .,       c"
+"        ,..       ..               '.       ..c."
+"           ;.   .'::;,'         ',:ll;.   .l."
+"              .,.       '     .        :,"
+"                  ..     '   .     .'"
+"                     .'   . ..  '."
+"                         '::c,"
+"                           ;"
 )
 
 # AxOS banner
@@ -49,25 +63,25 @@ for i in "${!ascii_logo[@]}"; do
 done
 echo
 
-# ───── System Info ─────
+# System info
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
 UPTIME="$(uptime -p)"
 SHELL="$SHELL"
-WM="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
+DE="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
 TERM="$TERM"
 CPU="$(grep -m1 'model name' /proc/cpuinfo | cut -d ':' -f2 | xargs)"
 RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Info lines
+# Collect info lines
 info_lines=(
   "OS: $OS"
   "Kernel: $KERNEL"
   "Uptime: $UPTIME"
   "Shell: $SHELL"
-  "WM/DE: $WM"
+  "DE: $DE"
   "Terminal: $TERM"
   "CPU: $CPU"
   "RAM: $RAM"
@@ -75,7 +89,7 @@ info_lines=(
   "Storage: $STORAGE"
 )
 
-# Get max length for padding
+# Find longest line length
 max_len=0
 for line in "${info_lines[@]}"; do
   (( ${#line} > max_len )) && max_len=${#line}
@@ -83,13 +97,13 @@ done
 
 box_width=$((max_len + 4)) # padding + borders
 
-# Top border
+# Print top border
 printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-# Info lines
+# Print each line padded
 for line in "${info_lines[@]}"; do
   printf "${COLOR2}│ ${RESET}%-*s ${COLOR2}│${RESET}\n" $max_len "$line"
 done
 
-# Bottom border
+# Print bottom border
 printf "${COLOR2}╰%s╯${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"

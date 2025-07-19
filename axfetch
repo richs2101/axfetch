@@ -2,6 +2,7 @@
 
 COLOR2="\033[1;38;5;213m"  # Bold magenta
 RESET="\033[0m"
+COLOR3="\033[1;38;5;213m"  # Same color as banner
 
 # Inline new ASCII logo
 ascii_logo=(
@@ -83,9 +84,11 @@ box_width=$((max_len + 4)) # padding + borders
 # Print top border
 printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-# Print each line padded
+# Print each line with colored labels matching the banner
 for line in "${info_lines[@]}"; do
-  printf "${COLOR2}│ ${RESET}%-*s ${COLOR2}│${RESET}\n" $max_len "$line"
+  label="${line%%:*}:"
+  value="${line#*:}"
+  printf "${COLOR3}│ ${COLOR3}%-10s${RESET}%-*s ${COLOR2}│${RESET}\n" "$label" $((box_width - 14)) "$value"
 done
 
 # Print bottom border

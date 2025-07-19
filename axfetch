@@ -6,24 +6,26 @@ RESET="\033[0m"
 
 # ASCII Logo (left side)
 ascii_logo=(
-"              o   o              "
-"         oo   o   o   ss         "
-"     oooo  oo       os  ssss     "
-"    o  o                 s  s    "
-"   oo o     oooooooo     s ss   "
-"  o oo      ooooooooo      ss s  "
-"    oo     ooooo ooooo     so    "
-" s  o      oooo   oooo      o  s "
-"s o        oooo   oooo        o o"
-"s s       ooo       ooo       o o"
-" s  s     ooo       ooo     o  o "
-"    ss    oo         oo    oo    "
-"  s ss ssooo         ooooo oo o  "
-"   ss s                   o oo   "
-"    s  s                 o  o    "
-"     ssss  ss       oo  oooo     "
-"         ss   s   s   oo         "
-"              s   o              "
+"             @@@#@@@#@@###@               "
+"         @#@#@#@@@###@@@##@@#@#@##        "
+"     @#@@##@@#@             #@#@##@##     "
+"     #@#@#@                    @#@@#@     "
+"    @@@@         @######@@       @##@@    "
+"   ##@@@       #OOOO   OOO#       @@@@@   "
+"  @#@##        #OOOO#@OOOOO@       @#@#@@ "
+" @@@@##        OOOO#  @OOOO#        #@##@@"
+"@@@##         @OOO@     #OOO        @#@@@#"
+"##            #OO@       #OO@          @##"
+"@@##@#       @OO#        @OO#        #@##@"
+" @@###@      ##O@         #OO@      #@@## "
+"  @##@@     @###          @OO#     @#@#@  "
+"   ##@@@   @###@           OO#@    @#@@@  "
+"    @@@@@                        @@#@@    "
+"    #@##@#@                @#@@##@##      "
+"      @#####@@##@       @#@@@#####@       "
+"            @#@##@@  @@##@@##             "
+"                 @#####@                  "
+"                   ##@                    "
 )
 
 # AxOS Banner (top-right)
@@ -70,8 +72,8 @@ done
 
 # Padding for box
 box_inner_width=$((max_info_width + 2))  # 1 space padding left and right
-border_top="╭$(printf '─%.0s' $(seq 1 $box_inner_width))╮"
-border_bot="╰$(printf '─%.0s' $(seq 1 $box_inner_width))╯"
+border_top="╭$(printf '─%.0s' $(seq 1 $box_inner_width))──╮"
+border_bot="╰$(printf '─%.0s' $(seq 1 $box_inner_width))──╯"
 
 # Compose system info box (as lines)
 sys_box=()

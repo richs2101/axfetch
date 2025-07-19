@@ -38,7 +38,7 @@ banner_lines=(
 # Print logo + banner side by side
 echo
 for i in "${!ascii_logo[@]}"; do
-    printf "${COLOR2}%-50s  %-40s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]}"
+    printf "${COLOR2}%-50s  %-40s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]:-}"
 done
 echo
 
@@ -79,9 +79,11 @@ box_width=$((max_len + 4)) # padding + borders
 # Print top border
 printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-# Print each line padded
+# Print each line with colored labels matching the banner
 for line in "${info_lines[@]}"; do
-  printf "${COLOR2}│ ${RESET}%-*s ${COLOR2}│${RESET}\n" $max_len "$line"
+  label="${line%%:*}:"
+  value="${line#*:}"
+  printf "${COLOR2}│ ${COLOR2}%-10s${RESET}%-*s ${COLOR2}│${RESET}\n" "$label" $((box_width - 14)) "$value"
 done
 
 # Print bottom border

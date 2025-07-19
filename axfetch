@@ -3,7 +3,7 @@
 COLOR2="\033[1;38;5;213m"  # Bold magenta
 RESET="\033[0m"
 
-# Inline ASCII logo
+# ASCII logo
 ascii_logo=(
 "                     ooooos"
 "                 os   o  o    s"
@@ -49,7 +49,7 @@ for i in "${!ascii_logo[@]}"; do
 done
 echo
 
-# System info
+# ───── System Info ─────
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
 UPTIME="$(uptime -p)"
@@ -61,42 +61,35 @@ RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Info lines as label:value
+# Info lines
 info_lines=(
-  "OS:$OS"
-  "Kernel:$KERNEL"
-  "Uptime:$UPTIME"
-  "Shell:$SHELL"
-  "WM/DE:$WM"
-  "Terminal:$TERM"
-  "CPU:$CPU"
-  "RAM:$RAM"
-  "Packages:$PKGS"
-  "Storage:$STORAGE"
+  "OS: $OS"
+  "Kernel: $KERNEL"
+  "Uptime: $UPTIME"
+  "Shell: $SHELL"
+  "WM/DE: $WM"
+  "Terminal: $TERM"
+  "CPU: $CPU"
+  "RAM: $RAM"
+  "Packages: $PKGS"
+  "Storage: $STORAGE"
 )
 
-# Calculate max label and value lengths
-max_label=0
-max_value=0
+# Get max length for padding
+max_len=0
 for line in "${info_lines[@]}"; do
-  label="${line%%:*}:"
-  value="${line#*:}"
-  (( ${#label} > max_label )) && max_label=${#label}
-  (( ${#value} > max_value )) && max_value=${#value}
+  (( ${#line} > max_len )) && max_len=${#line}
 done
 
-# Calculate total box width
-box_width=$((max_label + max_value + 6)) # borders + spacing
+box_width=$((max_len + 4)) # padding + borders
 
-# Print top border
+# Top border
 printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-# Print each info line
+# Info lines
 for line in "${info_lines[@]}"; do
-  label="${line%%:*}:"
-  value="${line#*:}"
-  printf "${COLOR2}│ ${COLOR2}%-*s${RESET} %-*s ${COLOR2}│${RESET}\n" "$max_label" "$label" "$max_value" "$value"
+  printf "${COLOR2}│ ${RESET}%-*s ${COLOR2}│${RESET}\n" $max_len "$line"
 done
 
-# Print bottom border
+# Bottom border
 printf "${COLOR2}╰%s╯${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"

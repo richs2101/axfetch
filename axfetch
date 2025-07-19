@@ -61,35 +61,41 @@ RAM="$(free -h | awk '/Mem:/ {print $3 "/" $2}')"
 PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
-# Info lines
+# Info lines as label:value
 info_lines=(
-  "OS:${OS}"
-  "Kernel:${KERNEL}"
-  "Uptime:${UPTIME}"
-  "Shell:${SHELL}"
-  "WM/DE:${WM}"
-  "Terminal:${TERM}"
-  "CPU:${CPU}"
-  "RAM:${RAM}"
-  "Packages:${PKGS}"
-  "Storage:${STORAGE}"
+  "OS:$OS"
+  "Kernel:$KERNEL"
+  "Uptime:$UPTIME"
+  "Shell:$SHELL"
+  "WM/DE:$WM"
+  "Terminal:$TERM"
+  "CPU:$CPU"
+  "RAM:$RAM"
+  "Packages:$PKGS"
+  "Storage:$STORAGE"
 )
 
-# Calculate box width
-max_len=0
+# Calculate max label and value lengths
+max_label=0
+max_value=0
 for line in "${info_lines[@]}"; do
-  (( ${#line} > max_len )) && max_len=${#line}
+  label="${line%%:*}:"
+  value="${line#*:}"
+  (( ${#label} > max_label )) && max_label=${#label}
+  (( ${#value} > max_value )) && max_value=${#value}
 done
-box_width=$((max_len + 4))
+
+# Calculate total box width
+box_width=$((max_label + max_value + 6)) # borders + spacing
 
 # Print top border
 printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-# Print each info line with colored label and normal value
+# Print each info line
 for line in "${info_lines[@]}"; do
   label="${line%%:*}:"
   value="${line#*:}"
-  printf "${COLOR2}│ ${COLOR2}%-10s${RESET}%-*s ${COLOR2}│${RESET}\n" "$label" $((box_width - 14)) "$value"
+  printf "${COLOR2}│ ${COLOR2}%-*s${RESET} %-*s ${COLOR2}│${RESET}\n" "$max_label" "$label" "$max_value" "$value"
 done
 
 # Print bottom border

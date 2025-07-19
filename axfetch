@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Colors
-COLOR2="\033[1;38;5;213m"
+COLOR2="\033[1;38;5;213m"  # Bold magenta for label and banner
 RESET="\033[0m"
 
 # ASCII Logo (left side)
@@ -28,12 +28,12 @@ ascii_logo=(
 
 # AxOS Banner (top-right)
 banner_lines=(
-"   █████╗ ██╗  ██╗ ██████╗ ███████╗"
-"  ██╔══██╗╚██╗██╔╝██╔═══██╗██╔════╝"
-"  ███████║ ╚███╔╝ ██║   ██║███████╗"
-"  ██╔══██║ ██╔██╗ ██║   ██║╚════██║"
-"  ██║  ██║██╔╝ ██╗╚██████╔╝███████║"
-"  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝"
+"${COLOR2}   █████╗ ██╗  ██╗ ██████╗ ███████╗${RESET}"
+"${COLOR2}  ██╔══██╗╚██╗██╔╝██╔═══██╗██╔════╝${RESET}"
+"${COLOR2}  ███████║ ╚███╔╝ ██║   ██║███████╗${RESET}"
+"${COLOR2}  ██╔══██║ ██╔██╗ ██║   ██║╚════██║${RESET}"
+"${COLOR2}  ██║  ██║██╔╝ ██╗╚██████╔╝███████║${RESET}"
+"${COLOR2}  ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝${RESET}"
 )
 
 # Gather system info
@@ -49,27 +49,27 @@ PKGS="$(pacman -Q | wc -l)"
 STORAGE="$(df -h / | awk 'NR==2 {print $3 "/" $2}')"
 
 info_lines=(
-  "OS: $OS"
-  "Kernel: $KERNEL"
-  "Uptime: $UPTIME"
-  "Shell: $SHELL"
-  "DE: $DE"
+  "OS:       $OS"
+  "Kernel:   $KERNEL"
+  "Uptime:   $UPTIME"
+  "Shell:    $SHELL"
+  "DE:       $DE"
   "Terminal: $TERM"
-  "CPU: $CPU"
-  "RAM: $RAM"
+  "CPU:      $CPU"
+  "RAM:      $RAM"
   "Packages: $PKGS"
-  "Storage: $STORAGE"
+  "Storage:  $STORAGE"
 )
 
-# Determine max width of info lines
+# Find max width of info lines (strip color codes for accurate width calculation)
 max_info_width=0
 for line in "${info_lines[@]}"; do
-  clean_length=$(echo -e "$line" | wc -c)
+  clean_length=$(echo -e "$line" | sed 's/\x1b\[[0-9;]*m//g' | wc -c)
   (( clean_length > max_info_width )) && max_info_width=$clean_length
 done
 
-# Padding for box
-box_inner_width=$((max_info_width + 2))  # 1 space padding left and right
+# Box padding
+box_inner_width=$((max_info_width + 4))  # 2 spaces padding left and right, plus border chars
 border_top="╭$(printf '─%.0s' $(seq 1 $box_inner_width))╮"
 border_bot="╰$(printf '─%.0s' $(seq 1 $box_inner_width))╯"
 
@@ -93,6 +93,7 @@ total_lines=$(( ${#ascii_logo[@]} > ${#right_panel[@]} ? ${#ascii_logo[@]} : ${#
 for ((i = 0; i < total_lines; i++)); do
   left="${ascii_logo[i]:-$(printf ' %.0s' {1..33})}"
   right="${right_panel[i]:-}"
+  # Printing the logo and box
   printf "${COLOR2}%-33s  %s${RESET}\n" "$left" "$right"
 done
 echo

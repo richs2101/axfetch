@@ -1,9 +1,9 @@
 #!/bin/bash
 
-COLOR2="\033[1;38;5;213m"  # Bold magenta
+COLOR2="\033[1;38;5;213m"  # Banner & label color
 RESET="\033[0m"
 
-# Updated ASCII logo
+# ASCII logo (updated)
 ascii_logo=(
 "              o   o              "
 "         oo   o   o   ss         "
@@ -25,7 +25,7 @@ ascii_logo=(
 "              s   o              "
 )
 
-# AxOS banner
+# Banner (AxOS)
 banner_lines=(
 "░█████╗░██╗░░██╗░█████╗░░██████╗"
 "██╔══██╗╚██╗██╔╝██╔══██╗██╔════╝"
@@ -35,14 +35,14 @@ banner_lines=(
 "╚═╝░░╚═╝╚═╝░░╚═╝░╚════╝░╚═════╝░"
 )
 
-# Print logo + banner side by side
+# Print logo + banner side-by-side
 echo
 for i in "${!ascii_logo[@]}"; do
-    printf "${COLOR2}%-50s  %-40s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]:-}"
+  printf "${COLOR2}%-50s  %-40s${RESET}\n" "${ascii_logo[i]}" "${banner_lines[i]:-}"
 done
 echo
 
-# System info
+# System Info
 OS="AxOS (Arch-based)"
 KERNEL="$(uname -r)"
 UPTIME="$(uptime -p)"
@@ -68,23 +68,30 @@ info_lines=(
   "Storage: $STORAGE"
 )
 
-# Find longest line length
+# Calculate max label + value length (no colors)
 max_len=0
 for line in "${info_lines[@]}"; do
-  (( ${#line} > max_len )) && max_len=${#line}
+  plain="${line}"
+  (( ${#plain} > max_len )) && max_len=${#plain}
 done
 
-box_width=$((max_len + 4)) # padding + borders
+box_width=$((max_len + 4))  # Padding
 
 # Print top border
 printf "${COLOR2}╭%s╮${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
 
-# Print each line with colored labels matching the banner
+# Print each info line inside the box
 for line in "${info_lines[@]}"; do
-  label="${line%%:*}:"
-  value="${line#*:}"
-  printf "${COLOR2}│ ${COLOR2}%-10s${RESET}%-*s ${COLOR2}│${RESET}\n" "$label" $((box_width - 14)) "$value"
+  label="${line%%:*}"
+  value="${line#*: }"
+
+  # Truncate if too long
+  max_val_width=$((box_width - ${#label} - 6))
+  [[ ${#value} -gt $max_val_width ]] && value="${value:0:$((max_val_width - 3))}..."
+
+  # Print line with padded value
+  printf "${COLOR2}│ ${COLOR2}%-9s${RESET}%-*s ${COLOR2}│${RESET}\n" "$label:" $((box_width - 13)) "$value"
 done
 
-# Print bottom border
+# Bottom border
 printf "${COLOR2}╰%s╯${RESET}\n" "$(printf '─%.0s' $(seq 1 $((box_width - 2))))"
